@@ -8,11 +8,22 @@ def main():
     count = 0
 
     xml = open("washington-latest.osm", "r")
-    for event, elem in etree.iterparse(xml):
+    context = etree.iterparse(xml, events=("start", "end"))
+
+    # turn into an iterable
+    context = iter(context)
+
+    # get the root
+    event, root = context.next()
+
+    for event, elem in context:
         count += 1
 
-        if elem.tag == 'way':
+        if event == "end" and elem.tag == 'way':
             print(elem.tag, elem.attrib)
+
+        # clear the root so that memory doesn't keep increasing
+        root.clear()
 
         if count % 10000 == 0:
             sys.stderr.write('{0}\n'.format(count))
