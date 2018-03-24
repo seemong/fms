@@ -21,14 +21,16 @@ def main():
 
         if event == "end" and elem.tag == 'way':
             print(elem.tag, elem.attrib)
+        elif event == 'start' and elem.tag == 'way':
+            continue
 
-        # clear the root so that memory doesn't keep increasing
+        elem.clear()
         root.clear()
 
         if count % 10000 == 0:
             sys.stderr.write('{0}\n'.format(count))
 
-    sys.stderr.write('Parsed {0} elements'.format(count))
+    sys.stderr.write('Parsed {0} elements\n'.format(count))
 
 
 
