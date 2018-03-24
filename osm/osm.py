@@ -16,16 +16,22 @@ def main():
     # get the root
     event, root = context.next()
 
+    save = False
     for event, elem in context:
         count += 1
 
-        if event == "end" and elem.tag == 'way':
+        if event == 'start' and elem.tag == 'way':
             print(elem.tag, elem.attrib)
-        elif event == 'start' and elem.tag == 'way':
-            continue
+            save = True
+        elif event == "end" and elem.tag == 'way':
+            print('end way')
+            save = False
+        elif save and event == 'end':
+            print('\t', elem.tag, elem.attrib)
 
-        elem.clear()
-        root.clear()
+        if not save:
+            elem.clear()
+            root.clear()
 
         if count % 10000 == 0:
             sys.stderr.write('{0}\n'.format(count))
