@@ -11,12 +11,13 @@ def main():
     
     pygame.draw.lines(screen, red, True, [(100, 100), (50, 300), (12, 13)], 2)
 
-    pygame.display.update()
+    pygame.display.flip()
     while True:
         event = pygame.event.wait()
         if event.type == pygame.QUIT:
             break
 
+    pygame.display.quit()
     print("Goodbye World")
 
 if __name__ == "__main__":
