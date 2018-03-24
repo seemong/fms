@@ -4,9 +4,9 @@ import xml.etree.ElementTree as etree
 import time
 
 def main():
-    print('Hello OSM')
+    sys.stderr.write('Hello OSM\n')
     count = 0
-    
+
     xml = open("washington-latest.osm", "r")
     for event, elem in etree.iterparse(xml):
         count += 1
@@ -14,7 +14,10 @@ def main():
         if elem.tag == 'way':
             print(elem.tag, elem.attrib)
 
-    print('Parsed {0} elements'.format(count))
+        if count % 10000 == 0:
+            sys.stderr.write('{0}\n'.format(count))
+
+    sys.stderr.write('Parsed {0} elements'.format(count))
 
 
 
