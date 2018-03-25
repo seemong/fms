@@ -39,11 +39,16 @@ def main():
             for tag in tree.findall('tag'):
                 k = tag.get('k')
                 v = tag.get('v')
+                found = False
                 for wanted in tags:
                     if k == wanted['k'] and v == wanted['v']:
                         tree.write(sys.stdout)
                         sys.stdout.write('\n')
                         ways += 1
+                        found = True
+                        break
+                if found:
+                    break
             save = False
 
         if not save:
