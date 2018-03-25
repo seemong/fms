@@ -9,7 +9,7 @@ def main():
     
     red = (255, 0, 0)
     
-    pygame.draw.lines(screen, red, True, [(100, 100), (50, 300), (12, 13)], 2)
+    pygame.draw.lines(screen, red, True, [(100, 100), (50, 300), (12, 13)], 1)
 
     pygame.display.flip()
     while True:
@@ -18,6 +18,7 @@ def main():
             break
 
     pygame.display.quit()
+    pygame.quit()
     print("Goodbye World")
 
 if __name__ == "__main__":
