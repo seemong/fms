@@ -2,9 +2,19 @@ from __future__ import print_function
 import sys
 import xml.etree.ElementTree as etree
 import time
+import argparse
 
 def main():
     sys.stderr.write('Hello OSM\n')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tag', action='append')
+    tag_args = parser.parse_args(sys.argv[1:]).tag
+    tags = []
+    for arg in tag_args:
+        kv = arg.split(':')
+        tags.append({ 'k' : kv[0], 'v' : kv[1] })
+
     count = 0
     ways = 0
 
@@ -24,11 +34,17 @@ def main():
         if event == 'start' and elem.tag == 'way':
             save = True
         elif event == "end" and elem.tag == 'way':
+            # write the way out if it's what we wanted
             tree = etree.ElementTree(elem)
-            tree.write(sys.stdout)
-            sys.stdout.write('\n')
+            for tag in tree.findall(tag):
+                k = tag.get('k')
+                v = tag.get('v')
+                for wanted in tags:
+                    if k == wanted['k'] and v == wanted['v']:
+                        tree.write(sys.stdout)
+                        sys.stdout.write('\n')
+                        ways += 1
             save = False
-            ways += 1
 
         if not save:
             elem.clear()
