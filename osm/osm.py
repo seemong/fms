@@ -2,10 +2,21 @@ from __future__ import print_function
 import sys
 import xml.etree.ElementTree as etree
 import time
+import argparse
 
 def main():
     sys.stderr.write('Hello OSM\n')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tag', action='append')
+    tag_args = parser.parse_args(sys.argv[1:]).tag
+    tags = []
+    for arg in tag_args:
+        kv = arg.split(':')
+        tags.append({ 'k' : kv[0], 'v' : kv[1] })
+
     count = 0
+    ways = 0
 
     xml = open("washington-latest.osm", "r")
     context = etree.iterparse(xml, events=("start", "end"))
@@ -21,13 +32,24 @@ def main():
         count += 1
 
         if event == 'start' and elem.tag == 'way':
-            print(elem.tag, elem.attrib)
             save = True
         elif event == "end" and elem.tag == 'way':
-            print('end way')
+            # write the way out if it's what we wanted
+            tree = etree.ElementTree(elem)
+            for tag in tree.findall('tag'):
+                k = tag.get('k')
+                v = tag.get('v')
+                found = False
+                for wanted in tags:
+                    if k == wanted['k'] and v == wanted['v']:
+                        tree.write(sys.stdout)
+                        sys.stdout.write('\n')
+                        ways += 1
+                        found = True
+                        break
+                if found:
+                    break
             save = False
-        elif save and event == 'end':
-            print('\t', elem.tag, elem.attrib)
 
         if not save:
             elem.clear()
@@ -37,6 +59,7 @@ def main():
             sys.stderr.write('{0}\n'.format(count))
 
     sys.stderr.write('Parsed {0} elements\n'.format(count))
+    sys.stderr.write('Dumped {0} ways\n'.format(ways))
 
 
 
