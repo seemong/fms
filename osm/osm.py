@@ -36,7 +36,7 @@ def main():
         elif event == "end" and elem.tag == 'way':
             # write the way out if it's what we wanted
             tree = etree.ElementTree(elem)
-            for tag in tree.findall(tag):
+            for tag in tree.findall('tag'):
                 k = tag.get('k')
                 v = tag.get('v')
                 for wanted in tags:
