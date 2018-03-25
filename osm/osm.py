@@ -6,6 +6,7 @@ import time
 def main():
     sys.stderr.write('Hello OSM\n')
     count = 0
+    ways = 0
 
     xml = open("washington-latest.osm", "r")
     context = etree.iterparse(xml, events=("start", "end"))
@@ -21,13 +22,13 @@ def main():
         count += 1
 
         if event == 'start' and elem.tag == 'way':
-            print(elem.tag, elem.attrib)
             save = True
         elif event == "end" and elem.tag == 'way':
-            print('end way')
+            tree = etree.ElementTree(elem)
+            tree.write(sys.stdout)
+            sys.stdout.write('\n')
             save = False
-        elif save and event == 'end':
-            print('\t', elem.tag, elem.attrib)
+            ways += 1
 
         if not save:
             elem.clear()
@@ -37,6 +38,7 @@ def main():
             sys.stderr.write('{0}\n'.format(count))
 
     sys.stderr.write('Parsed {0} elements\n'.format(count))
+    sys.stderr.write('Dumped {0} ways\n'.format(ways))
 
 
 
