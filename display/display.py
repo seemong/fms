@@ -33,27 +33,32 @@ def main():
     z = -5.0
     glTranslatef(x, y, z)
  
-    while True:
+    quit = False
+    while not quit:
         delta_x = delta_y = delta_z = 0
         
-        event = pygame.event.wait()
-        if event.type == pygame.QUIT:
-            break
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                delta_x = -0.1
-            if event.key == pygame.K_LEFT:
-                delta_x = 0.1
-            if event.key == pygame.K_UP:
-                delta_y = -0.1
-            if event.key == pygame.K_DOWN:
-                delta_y = 0.1
-            if event.key == pygame.K_q:
-                delta_z = 0.1
-            if event.key == pygame.K_a:
-                delta_z = -0.1
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                quit = True
+                continue
                 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    delta_x = -0.1
+                if event.key == pygame.K_LEFT:
+                    delta_x = 0.1
+                if event.key == pygame.K_UP:
+                    delta_y = -0.1
+                if event.key == pygame.K_DOWN:
+                    delta_y = 0.1
+                if event.key == pygame.K_q:
+                    delta_z = 0.1
+                if event.key == pygame.K_a:
+                    delta_z = -0.1
+                    
         glTranslatef(delta_x, delta_y, delta_z)
+        glRotatef(1, 3, 1, 1)
             
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         draw_diamond()
