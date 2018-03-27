@@ -5,11 +5,12 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 vertices = (
-    (0, 1, 0), (-1, 0, 0), (0, -1, 0), (1, 0, 0)
+    (0, 2, 0), (-2, 1, 0), (-1, 1, 0), (-1, 0, 0),
+    (1, 0, 0), (1, 1, 0), (2, 1, 0)
 )
 
 edges = (
-    (0, 1), (1, 2), (2, 3), (3, 0)
+    (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 0)
 )
 
 def draw_diamond():
@@ -58,7 +59,7 @@ def main():
                     delta_z = -0.1
                     
         glTranslatef(delta_x, delta_y, delta_z)
-        glRotatef(1, 3, 1, 1)
+        glRotatef(1, 0, 1, 1)
             
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         draw_diamond()
