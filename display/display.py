@@ -15,15 +15,34 @@ edges = (
     (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 0)
 )
 
+colors = (
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (0,1,0),
+    (1,1,1),
+    (0,1,1),
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (1,0,0),
+    (1,1,1),
+    (0,1,1),
+)
+
 def draw_diamond():
-    glBegin(GL_LINES)
+    glBegin(GL_QUADS)
+    c = 0
     for edge in edges:
         for vertex in edge:
+            glColor3fv(colors[c])
+            c = (c+1) % len(colors)
             glVertex3fv(vertices[vertex])
     glEnd()
     
-def draw_floor():
+def draw_floor():    
     glBegin(GL_LINES)
+    glColor3fv((1, 0.5, 0.5))
     for x in range(-10, 11):
         glVertex3fv((x, 0, 10))
         glVertex3fv((x, 0, -10))
