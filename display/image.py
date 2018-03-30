@@ -128,6 +128,7 @@ def init_gl():
     gluPerspective(90, 1, 0.1, 100)
     
     glEnable(GL_DEPTH_TEST)
+    glEnable(GL_CULL_FACE)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glLightfv(GL_LIGHT0, GL_POSITION, (10, -5, 10))
