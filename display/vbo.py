@@ -38,22 +38,6 @@ def main():
             ],'f')
         )
     
-    """
-    glEnable(GL_LIGHTING)
-    ambient = ( 0.2, 0.2, 0.2, 1.0 )
-    diffuse = ( 0.8, 0.8, 0.8, 1.0 )
-    specular = ( 0.5, 0.5, 0.5, 1.0 )
-    position = ( -3, 1.0, 4.0, 1.0 )
-
-    # Assign created components to GL_LIGHT0
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
-    glEnable(GL_LIGHT0)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-    
-    glEnable(GL_COLOR_MATERIAL)
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
-    """
 
     rotation_direction = 0
     quit = False
