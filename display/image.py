@@ -131,9 +131,9 @@ def init_gl():
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
     glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
     glLightfv(GL_LIGHT0, GL_POSITION, (10, -5, 10))
-    glLight(GL_LIGHT0, GL_AMBIENT, (0.5, 0.3, 0.2))
+    glLight(GL_LIGHT0, GL_DIFFUSE, (1.0, 1.0, 1.0, 1.0))
+    glEnable(GL_LIGHT0)
 
 def main():
     print("Hello World")
