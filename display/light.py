@@ -72,6 +72,10 @@ def main():
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_COLOR_MATERIAL)
 
+    x = 20
+    y = 10
+    z = 10
+
     quit = False
     while not quit:
         events = pygame.event.get()
@@ -81,6 +85,14 @@ def main():
                 break
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+
+        # set viewingtransform
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
+        x -= 0.1
+        y -= 0.1
+        z -= 0.1
 
         glPushMatrix()
         glColor(0, 0, 1)
