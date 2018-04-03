@@ -29,9 +29,10 @@ def make_render_frame():
     texture_id = load_texture("download.jpg")
     
     def render_frame():        
-        draw_sphere(1, 2, 1, -4, (1, 0.3, 0.2))
-        draw_sphere(2, -1, -2, 3, (0.3, 0.2, 0.7))
         draw_cube(texture_id)
+        draw_sphere(1, 2, 1, -4, (1, 0, 0))
+        draw_sphere(2, -1, -2, 3, (0, 0, 1))
+ 
         
     return render_frame
 
@@ -119,7 +120,7 @@ def draw_cube(id):
     
     glEnd()
     
-    glDisable(GL_TEXTURE_2D)
+    # glDisable(GL_TEXTURE_2D)
 
 def init_gl():
     glutInit()
@@ -132,6 +133,7 @@ def init_gl():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glLightfv(GL_LIGHT0, GL_POSITION, (10, -5, 10))
+    glLight(GL_LIGHT0, GL_AMBIENT, (0.5, 0.3, 0.2))
 
 def main():
     print("Hello World")
