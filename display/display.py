@@ -87,7 +87,7 @@ def main():
         for event in events:
             if event.type == pygame.QUIT:
                 quit = True
-                continue
+                break
                 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
@@ -97,6 +97,7 @@ def main():
         
         # glRotatef(rotation_direction, 0, 0, 1)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         gluLookAt(0, y, z, 0, 0, 0, x, 1, 0)
