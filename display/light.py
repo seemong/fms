@@ -81,18 +81,17 @@ def main():
                 break
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+
         glPushMatrix()
-
-        """
         glColor(0, 0, 1)
+        glTranslate(-3, 0, -2)
         glutSolidSphere(2, 50, 40)
-        # glutSolidCube(2)
-        """
+        glPopMatrix()
 
+        glPushMatrix()
         glTranslate(2, 2, -4)
         glColor(1.0, 0.0, 0.0)
         glutSolidCube(2)
-
         glPopMatrix()
 
         glColor(1.0, 1.0, 0.0)
