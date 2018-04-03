@@ -75,6 +75,7 @@ def main():
     x = 20
     y = 10
     z = 10
+    theta = 0
 
     quit = False
     while not quit:
@@ -90,9 +91,10 @@ def main():
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
-        x -= 0.1
-        y -= 0.1
-        z -= 0.1
+
+        theta += 0.01
+        x = 5 * math.sin(theta)
+        z = 5 * math.cos(theta)
 
         glPushMatrix()
         glColor(0, 0, 1)
@@ -120,7 +122,7 @@ def main():
         glDisableClientState(GL_NORMAL_ARRAY)
         #vbo.unbind()
         pygame.display.flip()
-        # pygame.time.wait(100)
+        # pygame.time.wait(50)
 
 if __name__ == "__main__":
     main()
