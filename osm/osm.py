@@ -3,6 +3,7 @@ import sys
 import xml.etree.ElementTree as etree
 import time
 import argparse
+from map import *
 
 def main():
     sys.stderr.write('Hello OSM\n')
