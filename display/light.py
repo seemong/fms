@@ -57,12 +57,13 @@ def main():
     # set projection transform
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(90, 1, 0.1, 100)
+    # gluPerspective(90, 1, 0.1, 100)
+    glOrtho(-4, 4, -4, 4, 0.1, 50)
 
     # set viewingtransform
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-    gluLookAt(0, 5, 5, 0, 0, 0, 0, 1, 0)
+    # glMatrixMode(GL_MODELVIEW)
+    # glLoadIdentity()
+    # gluLookAt(0, 5, 5, 0, 0, 0, 0, 1, 0)
 
     # init lights
     glEnable(GL_LIGHTING)
@@ -91,6 +92,10 @@ def main():
             if event.type == pygame.QUIT:
                 quit = True
                 break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    quit = True
+                    break
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
