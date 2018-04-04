@@ -3,10 +3,21 @@ import sys
 import xml.etree.ElementTree as etree
 import time
 import argparse
-from map import *
+from map.mapobject import *
 
 def main():
     sys.stderr.write('Hello OSM\n')
+    n1 = Node('chester', (2, 3, 4))
+    n2 = Node('foo')
+    n2.set_coords((10, 11, 12))
+    n2.add_attrib("k", "v")
+
+    w = Way("test-way")
+    w.add_node(n1)
+    w.add_node(n2)
+
+    print(w)
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--tag', action='append')
