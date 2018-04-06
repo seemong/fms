@@ -4,7 +4,6 @@ import xml.etree.ElementTree as etree
 import time
 import argparse
 from geometry.mapobject import *
-import pdb
 
 def make_osm_node(elem):
     """
