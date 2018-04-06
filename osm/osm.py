@@ -3,34 +3,24 @@ import sys
 import xml.etree.ElementTree as etree
 import time
 import argparse
-from map.mapobject import *
+from mapobject.mapobject import *
+
+def make_osm_node(elem):
+    assert elem.tag == 'node'
+    id = elem.get('id')
+    lat = elem.get('lat')
+    lon = elem.get('lom')
+    return Node(id, (lon, lat, 0))
 
 def main():
-    sys.stderr.write('Hello OSM\n')
-    n1 = Node('chester', (2, 3, 4))
-    n2 = Node('foo')
-    n2.set_coords((10, 11, 12))
-    n2.add_attrib("k", "v")
-
-    w = Way("test-way")
-    w.add_node(n1)
-    w.add_node(n2)
-
-    print(w)
-
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--tag', action='append')
-    tag_args = parser.parse_args(sys.argv[1:]).tag
-    tags = []
-    for arg in tag_args:
-        kv = arg.split(':')
-        tags.append({ 'k' : kv[0], 'v' : kv[1] })
-
     count = 0
+    nodes = 0
     ways = 0
+    map = Map('The Map')
+    
+    f = sys.argv[0]
 
-    xml = open("washington-latest.osm", "r")
+    xml = open(f, "r")
     context = etree.iterparse(xml, events=("start", "end"))
 
     # turn into an iterable
@@ -45,33 +35,37 @@ def main():
 
         if event == 'start' and elem.tag == 'way':
             save = True
-        elif event == "end" and elem.tag == 'way':
-            # write the way out if it's what we wanted
+        elif event == "end" and elem.tag == 'node':
+            node = make_osm_node(elem)
+            m.add_node(node)
+        elif event == 'end' and elem.tag == 'way':
             tree = etree.ElementTree(elem)
-            for tag in tree.findall('tag'):
-                k = tag.get('k')
-                v = tag.get('v')
-                found = False
-                for wanted in tags:
-                    if k == wanted['k'] and v == wanted['v']:
-                        tree.write(sys.stdout)
-                        sys.stdout.write('\n')
-                        ways += 1
-                        found = True
-                        break
-                if found:
-                    break
+
+            # write the way out if it's what we wanted
+            # for tag in tree.findall('tag'):
+            #    k = tag.get('k')
+            #    v = tag.get('v')
+            #    found = False
+            #    for wanted in tags:
+            #        if k == wanted['k'] and v == wanted['v']:
+            #            tree.write(sys.stdout)
+            #            sys.stdout.write('\n')
+            #            ways += 1
+            #            found = True
+            #            break
+            #    if found:
+            #        break
             save = False
 
         if not save:
             elem.clear()
             root.clear()
 
-        if count % 10000 == 0:
-            sys.stderr.write('{0}\n'.format(count))
 
-    sys.stderr.write('Parsed {0} elements\n'.format(count))
-    sys.stderr.write('Dumped {0} ways\n'.format(ways))
+    print(m)
+    print('Parsed {0} elements\n'.format(count))
+    print('Dumped {0} ways\n'.format(nodes))
+    print('Dumped {0} ways\n'.format(ways))
 
 
 
