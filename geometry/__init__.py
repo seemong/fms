@@ -1,1 +1,1 @@
-__all__ = ['geometry', 'mapobject']]
+__all__ = ['geometry', 'mapobject']
