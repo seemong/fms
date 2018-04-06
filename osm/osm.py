@@ -71,10 +71,12 @@ def make_osm_map(osmf):
     for event, elem in context:
         if event == 'start' and \
             (elem.tag == 'way' or elem.tag == 'node'):
+            # save tree elements until we see the end
             save = True
         elif event == 'end' and elem.tag == 'node':
             node = make_osm_node(elem)
             m.add_node(node)
+            save = False
         elif event == 'end' and elem.tag == 'way':
             # tree = etree.ElementTree(elem)
             way = make_osm_way(elem, node_finder)
@@ -87,10 +89,6 @@ def make_osm_map(osmf):
 
     return m
 
-def main():
+if __name__ == "__main__":
     m = make_osm_map(sys.argv[1])
     print(m)
-
-
-if __name__ == "__main__":
-    main()
