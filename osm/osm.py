@@ -19,7 +19,9 @@ def make_osm_node(elem):
     
 def make_osm_way(elem, node_finder):
     """
-    Make a Way out of the OSM XML tree. The map 
+    Make a Way out of the OSM XML tree. 
+    Update all nodes to have the altitude if it's an elevation 
+    contour
     """
     id = elem.get('id')
     w = Way(id)
