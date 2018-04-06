@@ -86,6 +86,9 @@ def make_osm_map(osmf):
         if not save:
             elem.clear()
             root.clear()
+    
+    # clear the tree at the end
+    root.clear()
 
     return m
 
