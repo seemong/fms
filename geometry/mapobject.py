@@ -52,7 +52,8 @@ class Mapobject(object):
 # Node in the map
 class Node(Mapobject, Coord):
     """
-    A node in the map has an id and coordinates
+    A node in the map has an id and coordinates.
+    It adds lat/long/alt methods to set coordinates
     """
     def __init__(self, id = None, coords = (None, None, None)):
         Mapobject.__init__(self, id)
@@ -137,22 +138,31 @@ class Map(Mapobject):
         
     def __str__(self):    
         return 'Map(' + self.get_id() + '):\nNodes(' + \
-            str(self.get_node_ids()) + \
-            ')\nWays(' + str(self.get_way_ids()) + ')'
+            str(self.get_all_node_ids()) + \
+            ')\nWays(' + str(self.get_all_way_ids()) + ')'
         
     def add_node(self, node):
         """Add node to map"""
         self.nodes_dict[node.get_id()] = (self.last_node_index, node)
         self.last_node_index += 1
         
-    def get_nodes(self):
+    def get_all_nodes(self):
         """Get list of nodes in this map"""
         return [ v[1] for v in self.nodes_dict.values() ]
         
-    def get_node_ids(self):
+    def get_node_from_id(self, id):
+        """Return the node given the id"""
+        return self.nodes_dict[id][1]
+        
+    def get_all_node_ids(self):
+        """Return all the node ids in order"""
         return self.nodes_dict.keys()
         
-    def get_node_index(self, node_id):
+    def get_all_node_coords(self):
+        """Get a list of all node coords"""
+        return [v[1].get_coords() for v in self.nodes_dict.values()]
+        
+    def get_node_index_from_id(self, node_id):
         """Return index of node in the numpy node array"""
         return self.nodes_dict[node_id][0]
 
@@ -164,19 +174,21 @@ class Map(Mapobject):
         self.ways_dict[way.get_id()] = (self.last_way_index, way)
         self.last_way_index += 1
         
-    def get_ways(self):
+    def get_all_ways(self):
         """Get list of ways to this map"""
         return [ v[1] for v in self.ways_dict.values() ]
         
-    def get_way_ids(self):
+    def get_way_from_id(self, id):
+        """Return the way given the way id"""
+        return self.ways_dict[id][1]
+        
+    def get_all_way_ids(self):
+        """Return all the way ids in order"""
         return self.ways_dict.keys()
     
-    def get_node_coords(self):
-        """Get a list of all node coords"""
-        return [v[1].get_coords() for v in self.nodes_dict.values()]
-    
     def get_node_indices_for_way(self, way):
-        return [self.get_node_index(id) for id in way.get_node_ids()]
+        """Given a way, find the indices for each of the nodes"""
+        return [self.get_node_index_from_id(id) for id in way.get_node_ids()]
         
 
 if __name__ == '__main__':
@@ -196,11 +208,11 @@ if __name__ == '__main__':
     m.add_way(w)
 
     print(m)
-    for n in m.get_nodes():
+    for n in m.get_all_nodes():
         print(n)
-    for w in m.get_ways():
+    for w in m.get_all_ways():
         print(w)
-    print(m.get_node_coords())
+    print(m.get_all_node_coords())
     print(m.get_node_indices_for_way(w))
 
 
