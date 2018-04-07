@@ -94,4 +94,5 @@ def make_osm_map(osmf):
 if __name__ == "__main__":
     m = make_osm_map(sys.argv[1])
     ways = m.get_all_ways()
-    print(m.get_node_indices_for_way(ways[3]))
+    for w in ways:
+        print(w.get_id(), m.get_node_indices_for_way(w))

@@ -7,18 +7,6 @@ import numpy as np
 from collections import OrderedDict
 
 
-def _list_to_string(l):
-    """
-    Helper function -- convert list l to a string
-    """
-    s = ''
-    for i in range(0, len(l)):
-        e = l[i]
-        s = s + str(e)
-        if i < len(l) - 1:
-            s = s + ';'
-    return s
-
 # Map objects have an id and each has a list of attributes
 class Mapobject(object):
     def __init__(self, id):
@@ -188,7 +176,15 @@ class Map(Mapobject):
     
     def get_node_indices_for_way(self, way):
         """Given a way, find the indices for each of the nodes"""
-        return [self.get_node_index_from_id(id) for id in way.get_node_ids()]
+        return [self.get_node_index_from_id(id) \
+            for id in way.get_node_ids()]
+            
+    def get_all_node_coords_numpy(self):
+        """
+        Return the coordinates for all nodes stored in 
+        numpy format
+        """
+        return np.array(self.get_all_node_coords(), dtype='float')
         
 
 if __name__ == '__main__':
@@ -214,5 +210,6 @@ if __name__ == '__main__':
         print(w)
     print(m.get_all_node_coords())
     print(m.get_node_indices_for_way(w))
+    print(m.get_all_node_coords_numpy())
 
 
