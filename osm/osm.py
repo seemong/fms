@@ -1,4 +1,6 @@
 from __future__ import print_function
+from __future__ import nested_scopes
+from builtins import *
 import sys
 import xml.etree.ElementTree as etree
 import time
@@ -91,5 +93,5 @@ def make_osm_map(osmf):
 
 if __name__ == "__main__":
     m = make_osm_map(sys.argv[1])
-    ways = m.get_ways()
-    print(m.get_node_indices_for_way(ways[2]))
+    ways = m.get_all_ways()
+    print(m.get_node_indices_for_way(ways[3]))
