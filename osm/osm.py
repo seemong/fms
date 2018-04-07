@@ -16,7 +16,7 @@ def make_osm_node(elem):
     
     return Node(id, (lon, lat, 0))
     
-def make_osm_way(elem, node_finder):
+def make_osm_way(elem):
     """
     Make a Way out of the OSM XML tree. 
     Update all nodes to have the altitude if it's an elevation 
@@ -28,8 +28,7 @@ def make_osm_way(elem, node_finder):
     # get all nodes belonging to the way
     for nd in elem.findall('nd'):
         node_id = nd.get('ref')
-        node = node_finder(node_id)
-        w.add_node(node)
+        w.add_node_id(node_id)
         
     # find all the associated attributes
     for tag in elem.findall('tag'):
@@ -64,7 +63,6 @@ def make_osm_map(osmf):
     # The map we will return, together with a function that
     # will return the node in the map given an id
     m = Map('The Map')
-    node_finder = m.make_node_finder()
     
     save = False
     for event, elem in context:
@@ -78,7 +76,7 @@ def make_osm_map(osmf):
             save = False
         elif event == 'end' and elem.tag == 'way':
             # tree = etree.ElementTree(elem)
-            way = make_osm_way(elem, node_finder)
+            way = make_osm_way(elem)
             m.add_way(way)
             save = False
 
@@ -93,4 +91,5 @@ def make_osm_map(osmf):
 
 if __name__ == "__main__":
     m = make_osm_map(sys.argv[1])
-    print(m)
+    ways = m.get_ways()
+    print(m.get_node_indices_for_way(ways[2]))

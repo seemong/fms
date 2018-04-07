@@ -3,8 +3,11 @@ from __future__ import nested_scopes
 from builtins import *
 from geometry import Coord
 import pdb
+import numpy as np
+from collections import OrderedDict
 
-def _listify(l):
+
+def _list_to_string(l):
     """
     Helper function -- convert list l to a string
     """
@@ -87,109 +90,93 @@ class Node(Mapobject, Coord):
 
 class Way(Mapobject):
     """
-    A way is a set of nodes and associated attributes.
-    Implemented as a dictionary of nodes referenced by the node id.
+    A way is a set of node ids and associated attributes.
     """
     def __init__(self, id):
         super().__init__(id)
-        self.nodes = []
-        self.max_lat = None
-        self.min_lat = None
-        self.max_lon = None
-        self.min_lon = None
+        self.node_ids = []
         self.attribs = dict()
 
     def __str__(self):
         return "Way(" + self.get_id() + '):' + \
-            'attribs:(' + str(self.get_attribs()) + '):' + \
-            _listify(self.get_nodes()) + ')'
+            'attribs:(' + str(self.get_attribs()) + '):node_ids(' + \
+            str(self.get_node_ids()) + ')'
 
-    def get_nodes(self):
-        """Return the list of nodes belonging to this way"""
-        return self.nodes
+    def get_node_ids(self):
+        """Return the list of node ids belonging to this way"""
+        return self.node_ids
 
     def num_nodes(self):
-        return len(self.nodes)
+        return len(self.node_ids)
 
-    def add_node(self, node):
+    def add_node_id(self, node_id):
         """
-        Add this node to the way, and calculate the min/max 
-        bounding box for the way
+        Add this node with the given id to the way
         """
-        node_id = node.get_id()
-        self.nodes.append(node)
-        
-        # set max/min bounds
-        lat = node.get_latitude()
-        lon = node.get_longitude()
-        if self.max_lat == None:
-            self.min_lat = self.max_lat = lat
-            self.min_lon = self.max_lon = lon
-            return
-        if self.min_lat > lat:
-            self.min_lat = lat
-        if self.max_lat < lat:
-            self.max_lat = lat
-        if self.min_lon > lon:
-            self.min_lon = lon
-        if self.max_lon < lon:
-            self.max_lon = lon
-        
-    def get_bounds(self):
-        """Return the bounds (min lat, min long, max lat, max long)"""
-        return (self.min_lat, self, min_long, 
-            self.max_lat, self.max_long)
-
+        self.node_ids.append(node_id)
         
         
-# A Map is a collection of nodes and ways
 class Map(Mapobject):
+    """
+    A map is a collection of nodes and ways
+    """
     def __init__(self, id):
         super().__init__(id)
-        self.nodes = dict()
-        self.ways = dict()
         
-    def __str__(self):
-        node_list = self.get_nodes()
-        node_list_str = _listify(node_list)
-        ways_list = self.get_ways()
-        ways_list_str = _listify(ways_list)
-    
+        # keep the nodes as a dictionary that indexes
+        # to a tuple (index, Node) based on node id
+        self.nodes_dict = OrderedDict()
+        
+        # keep a way as a dictionary that indexes to a tuple
+        # (index, Way) based on way id
+        self.ways_dict = OrderedDict()
+        
+        # last node index is incremented each time a node is added
+        # and similarly for the last node index
+        self.last_node_index = self.last_way_index = 0
+        
+    def __str__(self):    
         return 'Map(' + self.get_id() + '):\nNodes(' + \
-            _listify(self.get_nodes()) \
-            + ')\nWays(' + _listify(self.get_ways()) \
-            + ')'
+            str(self.get_node_ids()) + \
+            ')\nWays(' + str(self.get_way_ids()) + ')'
         
     def add_node(self, node):
         """Add node to map"""
-        self.nodes[node.get_id()] = node
+        self.nodes_dict[node.get_id()] = (self.last_node_index, node)
+        self.last_node_index += 1
         
     def get_nodes(self):
         """Get list of nodes in this map"""
-        return [ v for v in self.nodes.values() ]
+        return [ v[1] for v in self.nodes_dict.values() ]
         
-    def make_node_finder(self):
-        """
-        Return a function that finds a node in this map
-        """
-        n = self.nodes
-        def dictionary_finder(id):
-            return n[id]
-        return dictionary_finder
+    def get_node_ids(self):
+        return self.nodes_dict.keys()
         
+    def get_node_index(self, node_id):
+        """Return index of node in the numpy node array"""
+        return self.nodes_dict[node_id][0]
+
     def add_way(self, way):
         """
         Add way to this map. 
         Also adds all nodes to the map if they aren't already in the map
         """
-        for node in way.get_nodes():
-            if not node in self.nodes:
-                self.add_node(node)
-        self.ways[way.get_id()] = way
+        self.ways_dict[way.get_id()] = (self.last_way_index, way)
+        self.last_way_index += 1
         
     def get_ways(self):
         """Get list of ways to this map"""
-        return [ v for v in self.ways.values() ]
+        return [ v[1] for v in self.ways_dict.values() ]
+        
+    def get_way_ids(self):
+        return self.ways_dict.keys()
+    
+    def get_node_coords(self):
+        """Get a list of all node coords"""
+        return [v[1].get_coords() for v in self.nodes_dict.values()]
+    
+    def get_node_indices_for_way(self, way):
+        return [self.get_node_index(id) for id in way.get_node_ids()]
         
 
 if __name__ == '__main__':
@@ -199,13 +186,21 @@ if __name__ == '__main__':
     n2.add_attrib("k", "v")
 
     w = Way("test-way")
-    w.add_node(n1)
-    w.add_node(n2)
+    w.add_node_id(n1.get_id())
+    w.add_node_id(n2.get_id())
+    w.add_attrib('ele', 400)
     
     m = Map("themap")
-    #m.add_node(n1)
+    m.add_node(n1)
     m.add_node(n2)
     m.add_way(w)
 
     print(m)
+    for n in m.get_nodes():
+        print(n)
+    for w in m.get_ways():
+        print(w)
+    print(m.get_node_coords())
+    print(m.get_node_indices_for_way(w))
+
 

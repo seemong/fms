@@ -2,7 +2,7 @@ from __future__ import print_function
 from __future__ import nested_scopes
 from builtins import *
 
-# Node in the map
+
 class Coord(object):
     """
     A coordinate in the map has an id and x, y, z coords
