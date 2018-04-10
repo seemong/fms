@@ -6,115 +6,98 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import math
 
-vertices = (
-    (0, 3, 0), (-2, 2, 0), (-1, 2, 0), (-1, 0, 0),
-    (1, 0, 0), (1, 2, 0), (2, 2, 0)
-)
-
-edges = (
-    (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 0)
-)
-
-colors = (
-    (1,0,0),
-    (0,1,0),
-    (0,0,1),
-    (0,1,0),
-    (1,1,1),
-    (0,1,1),
-    (1,0,0),
-    (0,1,0),
-    (0,0,1),
-    (1,0,0),
-    (1,1,1),
-    (0,1,1),
-)
-
-def draw_diamond():
-    glBegin(GL_POLYGON)
-    c = 0
-    for edge in edges:
-        for vertex in edge:
-            glColor3fv(colors[c])
-            c = (c+1) % len(colors)
-            glVertex3fv(vertices[vertex])
-    glEnd()
-    
-def draw_floor():    
-    glBegin(GL_LINES)
-    glColor3fv((1, 0.5, 0.5))
-    for x in range(-10, 11):
-        glVertex3fv((x, 0, 10))
-        glVertex3fv((x, 0, -10))
+class Display(object):
+    """
+    Display object combines pygame and pyopengl to provide a 
+    double buffered drawing surface for 2D/3D
+    """
+    def __init__(self, name = "", x=0, y=0, 
+        width=800, height=800, redraw_func=None, perspective=True,
+        eye=(0, 0, 0), heading=0, ascension=0):
+        """
+        Name describes this display object.
+        Position is the position of the display in window coordinates
+        Width and height of the pygame display
+        """
+        self.name = name
+        self.display = None
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.perspective = perspective
         
-    for z in range(-10, 11):
-        glVertex3fv((10, 0, z))
-        glVertex3fv((-10, 0, z))
-    glEnd()
-    
-def draw_sphere():
-    glPushMatrix()
-    glTranslate(5, 5, -3)
-    glColor((0.2, 1, 0.4))
-    glutSolidSphere(1, 10, 20)
-    glTranslate(2, 2, -2)
-    glColor((0.3, 0.3, 0.8))
-    glutWireSphere(3, 10, 30)
-    glPopMatrix()
-
-
-def main():
-    print("Hello World")
-
-    pygame.init()
-    display = (800, 800)
-    screen = pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
-    glutInit()
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(90, 1, 0.1, 100)
-    
-    x = 10.0
-    y = 40.0
-    z = 45.0
-
-    rotation_direction = 0
-    quit = False
-    while not quit:
-        delta_x = delta_y = delta_z = 0
+        self.redraw_func = None
         
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                quit = True
-                break
-                
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    rotation_direction = 1
-                if event.key == pygame.K_LEFT:
-                    rotation_direction = -1
+        # pygame attributes
+        self.screen = None
         
-        # glRotatef(rotation_direction, 0, 0, 1)
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        # set camera
+        lookAt(eye, heading, ascension)
         
-        glMatrixMode(GL_MODELVIEW)
+    def lookAt(eye, heading, ascension):
+        self.eye = eye
+        self.heading = heading
+        self.ascension = ascension
+        #TODO(calculate look at point)
+        
+    def ortho(left, right, bottom, top, near, far):
+        glOrtho(left, right, bottom top, near, far)
+        
+    def set_redraw_func(self, redraw_func):
+        """
+        Set the redrawing function
+        """
+        self.redraw_func = redraw_func
+        
+    def create(self):
+        """Initialize and create display on the screen"""
+        
+        # init pygame
+        pygame.init()
+        size = (self.width, self.height)
+        self.screen = pygame.display.set_mode(size, DOUBLEBUF|OPENGL)
+
+        #init GL
+        glutInit()
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+        glShadeModel(GL_SMOOTH)
+        
+        # init projection
+        glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluLookAt(0, y, z, 0, 0, 0, x, 1, 0)
-        z -= 0.1
-        y -= 0.1
-        x -= 0.05
- 
-        draw_diamond()
-        draw_floor()
-        draw_sphere()
+        if self.perspective:
+            gluPerspective(90, 1, 0.1, 100)
+        else:
+            glOrtho(-4, 4, -4, 4, 0.1, 50)
+        
+        # init lights
+        glEnable(GL_LIGHTING)
+        # set up light 0
+        ambient = (0.2, 0.2, 0.2, 1.0)      # default is dim white
+        diffuse = ( 1.0, 1.0, 1.0, 1.0 )    # default is white light
+        position = ( 0.0, 0.0, 0.0 )        # default is origin
+        glEnable(GL_LIGHT0)
+        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT0, GL_POSITION, position);
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
+        glEnable(GL_COLOR_MATERIAL)
+        
+    def get_events(self):
+        return pygame.event.get()
 
-        pygame.display.flip()
-        # pygame.time.wait(10)
+    def redraw(self):
+        """Draw one frame"""
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        # call the redrawing function
+        self.redraw_func(self)
 
-    pygame.display.quit()
-    pygame.quit()
-    print("Goodbye World")
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    def redraw(display):
+        pass
+        
+    
+    display = Display("test-display")
+    
