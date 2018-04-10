@@ -149,7 +149,7 @@ if __name__ == '__main__':
         if quit:
             break
 
-        eye = (4 * math.sin(theta), eye[1], eye[2])
+        eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         theta += 0.1
         # position = (4 * math.sin(theta), position[1], position[2])
         display.set_light_position(position)
