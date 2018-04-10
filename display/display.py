@@ -4,7 +4,10 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from OpenGL.arrays.vbo import *
+from OpenGLContext.arrays import *
 import math
+import numpy as np
 
 class Display(object):
     """
@@ -127,10 +130,64 @@ class Display(object):
         glutSolidCube(size)
         glPopMatrix()
 
+    def draw_triangles(self, vertices, indices, normals, color):
+        """Helper method to draw a line"""
+        assert type(vertices) == np.ndarray
+        assert type(indices) == np.ndarray
+        assert type(normals) == np.ndarray
+
+        # init
+        glColor(color)
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        # setup vertices
+        vbo = VBO(vertices)
+        vbo.bind()
+        glVertexPointerf(vbo)
+
+        # setup normals
+        glEnableClientState(GL_NORMAL_ARRAY)
+        vbonorm = VBO(normals)
+        vbonorm.bind()
+        glNormalPointerf(vbonorm)
+
+        # glDrawArrays(GL_TRIANGLES, 0, 6)
+        glDrawElements(GL_TRIANGLES, len(vertices), GL_UNSIGNED_INT, \
+            indices.tostring())
+
+        # clean up
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_NORMAL_ARRAY)
+
 if __name__ == '__main__':
     print('Hello World')
     display = Display('test', projection='perspective')
     display.create()
+
+    vertices  =  array(                               \
+            [
+                # 1st triangle
+                [  0, 1, 0 ],                  \
+                [ -1, 0, 0 ],                  \
+                [  1,-0, 0 ],                  \
+                # 2nd triangle
+                [  0, 0, 0 ],                  \
+                [  -2, 0, 2 ],                \
+                [  2, 0, 2 ],                 \
+            ], 'f')
+
+    indices = array([0, 1, 2, 3, 4, 5], 'uint32')
+
+    normals = array([                               \
+                # 1st triangle
+                [0, 0, 1],                    \
+                [0, 0, 1],                    \
+                [0, 0, 1],                    \
+                #2nd triangle
+                [0, 1, 0],                    \
+                [0, 1, 0],                    \
+                [0, 1, 0],                    \
+            ], 'f')
 
     position = (-4, 4, 4)
     display.set_light_position(position)
@@ -151,13 +208,14 @@ if __name__ == '__main__':
 
         eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         theta += 0.1
-        # position = (4 * math.sin(theta), position[1], position[2])
+        position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
         display.set_light_position(position)
         display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (2, 0, 0))
-        display.draw_solid_cube(3, (0, 0, 1), (-2, 0, 0))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (4, 0, 0))
+        display.draw_solid_cube(3, (0, 0, 1), (-4, 0, 0))
+        display.draw_triangles(vertices, indices, normals, (0, 1, 0))
         display.postdraw()
 
     print('Goodbye, World')

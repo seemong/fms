@@ -82,7 +82,7 @@ def main():
     y = 10
     z = 10
     theta = 0
-    
+
     clock = pygame.time.Clock()
 
     quit = False
@@ -128,19 +128,19 @@ def main():
         glEnableClientState(GL_NORMAL_ARRAY)
         normals.bind()
         glNormalPointerf(normals)
-        
+
         # glDrawArrays(GL_TRIANGLES, 0, 6)
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, vertex_indices.tostring())
-        
+
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
 
         pygame.display.flip()
         print(clock.tick())
         # pygame.time.wait(50)
-    
-    pygame.display.quit()    
+
+    pygame.display.quit()
     pygame.quit()
-    
+
 if __name__ == "__main__":
     main()
