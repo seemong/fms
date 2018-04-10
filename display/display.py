@@ -14,7 +14,8 @@ class Display(object):
 
     def __init__(self, name = "", x=0, y=0,
         width=800, height=800, projection="perspective",
-        eye=(0, 0, 0), true_heading=0, ascension=0):
+        eye=(1, 1, 1), center=(0, 0, 0), up = (0, 0, 1),
+        ascension=0, near = 0.1, far = 50):
         """
         Name describes this display object.
         Position is the position of the display in window coordinates.
@@ -27,22 +28,29 @@ class Display(object):
         self.y = y
         self.width = width
         self.height = height
-        self.true_heading = true_heading
-        self.ascension = ascension
+        self.eye = eye
+        self.center = center
+        self.up = up
         assert projection == 'perspective' or projection == 'ortho'
         self.projection = projection
+        self.near = near
+        self.far = far
 
         # pygame attributes
         self.screen = None
 
-        # set camera
-        self.lookAt(eye, true_heading, ascension)
-
-    def lookAt(self, eye, true_heading, ascension):
+    def lookAt(self, eye, center, up):
         self.eye = eye
-        self.true_heading = true_heading
-        self.ascension = ascension
-        #TODO(calculate look at point)
+        self.center = center
+        self.up = up
+
+        # call open GL
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        gluLookAt(eye[0], eye[1], eye[2],        \
+            center[0], center[1], center[2],     \
+            up[0], up[1], up[2])
+
 
     def set_perspective(fovy, aspect, zNear, zFar):
         glMatrixMode(GL_PROJECTION)
@@ -74,20 +82,27 @@ class Display(object):
         else:
             glOrtho(-4, 4, -4, 4, 0.1, 50)
 
+        self.lookAt(self.eye, self.center, self.up)
+
         # init lights
         glEnable(GL_LIGHTING)
         # set up light 0
-        ambient = (0.2, 0.2, 0.2, 1.0)      # default is dim white
-        diffuse = ( 1.0, 1.0, 1.0, 1.0 )    # default is white light
-        position = ( 0.0, 10.0, 2.0 )        # default is origin
+        ambient = (0.15, 0.15, 0.15, 1.0)      # default is dim white
+        diffuse = ( 1.0, 1.0, 1.0, 1.0 )       # default is white light
+        position = ( 0.0, 0.0, 0.0 )           # default is origin
         glEnable(GL_LIGHT0)
         glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT0, GL_POSITION, position);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse)
+        glLightfv(GL_LIGHT0, GL_POSITION, position)
         glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
         glEnable(GL_COLOR_MATERIAL)
 
+    def set_light_position(self, position):
+        """Set the position of the one light in the display"""
+        glLightfv(GL_LIGHT0, GL_POSITION, position)
+
     def get_events(self):
+        """Return the pygame events"""
         return pygame.event.get()
 
     def predraw(self):
@@ -99,16 +114,28 @@ class Display(object):
         pygame.display.flip()
 
     def draw_solid_sphere(self, radius, slices, stacks, color, position):
+        """Helper method to draw a solid sphere"""
         glPushMatrix()
         glColor(color)
         glTranslate(position[0], position[1], position[2])
         glutSolidSphere(radius, slices, stacks)
         glPopMatrix()
 
+    def draw_solid_cube(self, size, color, position):
+        """Helper method to draw a solid cube"""
+        glPushMatrix()
+        glTranslate(position[0], position[1], position[2])
+        glColor(color)
+        glutSolidCube(size)
+        glPopMatrix()
+
 if __name__ == '__main__':
     print('Hello World')
-    display = Display('test', projection='ortho')
+    display = Display('test', projection='perspective')
     display.create()
+
+    display.set_light_position((-4, 4, 4))
+    display.lookAt((-5, 5, 10), (0, 0, 0), (0, 0, 1))
     while True:
         quit = False
         for event in display.get_events():
@@ -119,7 +146,8 @@ if __name__ == '__main__':
             break
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (2, 2, -3))
+        display.draw_solid_cube(3, (0, 0, 1), (-2, -2, -7))
         display.postdraw()
 
     print('Goodbye, World')
