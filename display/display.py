@@ -71,7 +71,7 @@ class Display(object):
         #init GL
         glutInit()
         glEnable(GL_DEPTH_TEST)
-        # glEnable(GL_CULL_FACE)
+        glEnable(GL_CULL_FACE)
         glShadeModel(GL_SMOOTH)
 
         # init projection
@@ -81,8 +81,6 @@ class Display(object):
             gluPerspective(90, 1, 0.1, 100)
         else:
             glOrtho(-4, 4, -4, 4, 0.1, 50)
-
-        self.lookAt(self.eye, self.center, self.up)
 
         # init lights
         glEnable(GL_LIGHTING)
@@ -134,8 +132,14 @@ if __name__ == '__main__':
     display = Display('test', projection='perspective')
     display.create()
 
-    display.set_light_position((-4, 4, 4))
-    display.lookAt((-5, 5, 10), (0, 0, 0), (0, 0, 1))
+    position = (-4, 4, 4)
+    display.set_light_position(position)
+
+    eye = (-4, -5, 5)
+    center = (0, 0, 0)
+    up = (0, 0, 1)
+
+    theta = 0
     while True:
         quit = False
         for event in display.get_events():
@@ -145,9 +149,15 @@ if __name__ == '__main__':
         if quit:
             break
 
+        eye = (4 * math.sin(theta), eye[1], eye[2])
+        theta += 0.1
+        # position = (4 * math.sin(theta), position[1], position[2])
+        display.set_light_position(position)
+        display.lookAt(eye, center, up)
+
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (2, 2, -3))
-        display.draw_solid_cube(3, (0, 0, 1), (-2, -2, -7))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (2, 0, 0))
+        display.draw_solid_cube(3, (0, 0, 1), (-2, 0, 0))
         display.postdraw()
 
     print('Goodbye, World')
