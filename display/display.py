@@ -130,7 +130,8 @@ class Display(object):
         glutSolidCube(size)
         glPopMatrix()
 
-    def draw_triangles(self, vertices, indices, normals, color):
+
+    def draw_vertices(self, vertices, indices, normals, color, size, draw_type):
         """Helper method to draw a line"""
         assert type(vertices) == np.ndarray
         assert type(indices) == np.ndarray
@@ -138,6 +139,7 @@ class Display(object):
 
         # init
         glColor(color)
+        glLineWidth(size)
         glEnableClientState(GL_VERTEX_ARRAY);
 
         # setup vertices
@@ -152,12 +154,22 @@ class Display(object):
         glNormalPointerf(vbonorm)
 
         # glDrawArrays(GL_TRIANGLES, 0, 6)
-        glDrawElements(GL_TRIANGLES, len(vertices), GL_UNSIGNED_INT, \
-            indices.tostring())
+        if draw_type == 'triangles':
+            glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
+        elif draw_type == 'lines':
+            glDrawElements(GL_LINES, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
 
         # clean up
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
+
+    def draw_triangles(self, vertices, indices, normals, color, size=1):
+        self.draw_vertices(vertices, indices, normals, color, size, 'triangles')
+
+    def draw_lines(self, vertices, indices, normals, color, size=1):
+        self.draw_vertices(vertices, indices, normals, color, size, 'lines')
 
 if __name__ == '__main__':
     print('Hello World')
@@ -206,7 +218,7 @@ if __name__ == '__main__':
         if quit:
             break
 
-        eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
+        # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         theta += 0.1
         position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
         display.set_light_position(position)
@@ -215,7 +227,7 @@ if __name__ == '__main__':
         display.predraw()
         display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (4, 0, 0))
         display.draw_solid_cube(3, (0, 0, 1), (-4, 0, 0))
-        display.draw_triangles(vertices, indices, normals, (0, 1, 0))
+        display.draw_triangles(vertices, indices, normals, (0, 1, 0), 2)
         display.postdraw()
 
     print('Goodbye, World')
