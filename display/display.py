@@ -57,10 +57,12 @@ class Display(object):
 
     def set_perspective(self, fovy, aspect, zNear, zFar):
         glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
         gluPerpective(fovy, aspect, zNear, zFar)
 
     def set_ortho(self, left, right, bottom, top, near, far):
         glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
         glOrtho(left, right, bottom, top, near, far)
         
 
@@ -224,8 +226,8 @@ if __name__ == '__main__':
     display = Display('test', projection='ortho')
     display.create()
     
-    display.set_ortho(-2, 2, -2, 2, 0.1, 50)
-    display.lookAt((0, 0, 5), (0, 0, 0), (0, 0, 1))
+    display.set_ortho(-2, 2, -2, 2, -1.5, 2)
+    # display.lookAt((0, 0, 5), (0, 0, 0), (0, 0, 1))
     
     position = (0, -4, 0)
     display.set_light_position(position)
@@ -248,13 +250,13 @@ if __name__ == '__main__':
         theta += 0.1
         position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
         display.set_light_position(position)
-        display.lookAt(eye, center, up)
+        # display.lookAt(eye, center, up)
 
         display.predraw()
         display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
-        #display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
-        display.draw_lines(vertices, indices, normals, \
-            (0, 1, 0), 2)
+        # display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
+        #display.draw_lines(vertices, indices, normals, \
+        #    (0, 1, 0), 2)
         display.postdraw()
 
     print('Goodbye, World')

@@ -58,7 +58,7 @@ def main():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     # gluPerspective(90, 1, 0.1, 100)
-    glOrtho(-4, 4, -4, 4, 0.1, 50)
+    glOrtho(-2, 2, -2, 2, 0.1, 50)
 
     # set viewingtransform
     # glMatrixMode(GL_MODELVIEW)
@@ -100,9 +100,9 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
         # set viewingtransform
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
+        #glMatrixMode(GL_MODELVIEW)
+        #glLoadIdentity()
+        #gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
 
         theta += 0.01
         x = 5 * math.sin(theta)
@@ -110,16 +110,18 @@ def main():
 
         glPushMatrix()
         glColor(0, 0, 1)
-        glTranslate(-3, 0, -2)
+        # glTranslate(-3, 0, -2)
         glutSolidSphere(2, 50, 40)
         glPopMatrix()
 
+        """
         glPushMatrix()
         glTranslate(2, 2, -4)
         glColor(1.0, 0.0, 0.0)
         glutSolidCube(2)
         glPopMatrix()
-
+        """
+        
         glColor(1.0, 1.0, 0.0)
         glEnableClientState(GL_VERTEX_ARRAY);
         vbo.bind()
