@@ -64,6 +64,8 @@ def main():
 
     vertices = m.get_all_node_coords()
 
+    clock = pygame.time.Clock()
+
     theta = 0
     while True:
         quit = False
@@ -87,6 +89,8 @@ def main():
             indices = m.get_node_segment_indices_for_way(w)
             display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
+
+        print(clock.tick())
 
     display.quit()
     print('Goodbye, World')
