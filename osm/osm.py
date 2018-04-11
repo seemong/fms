@@ -99,3 +99,4 @@ if __name__ == "__main__":
     ways = m.get_all_ways()
     for w in ways:
         print(w.get_id(), m.get_node_indices_for_way(w))
+    print(m.get_extent())

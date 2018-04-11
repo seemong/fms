@@ -8,6 +8,7 @@ from OpenGL.arrays.vbo import *
 from OpenGLContext.arrays import *
 import math
 import numpy as np
+import types
 
 class Display(object):
     """
@@ -129,13 +130,38 @@ class Display(object):
         glColor(color)
         glutSolidCube(size)
         glPopMatrix()
-
-
+        
+    def quit(self):
+        pygame.display.quit()
+        pygame.quit()
+        
+    @classmethod
+    def make_vbo(cls, a):
+        """
+        Convert a to a VBO from either a regular list, a njmpy array
+        or just return a otherwise (assuming it's a VBO)
+        """
+        if type(a) == types.ListType:
+            return VBO(np.array(a, 'f'))
+        elif type(a) == np.ndarray:
+            return VBO(a)
+        else:
+            print(type(a))
+            return a
+         
+    @classmethod
+    def make_numpy_indices(cls, a):
+        """
+        Convert a to a numpy index if it's a list or just return a
+        otherwise
+        """
+        if type(a) == types.ListType:
+            return array(a, 'uint32')
+        else:
+            return a
+        
     def draw_vertices(self, vertices, indices, normals, color, size, draw_type):
         """Helper method to draw a line"""
-        assert type(vertices) == np.ndarray
-        assert type(indices) == np.ndarray
-        assert type(normals) == np.ndarray
 
         # init
         glColor(color)
@@ -143,17 +169,17 @@ class Display(object):
         glEnableClientState(GL_VERTEX_ARRAY);
 
         # setup vertices
-        vbo = VBO(vertices)
+        vbo = Display.make_vbo(vertices)
         vbo.bind()
         glVertexPointerf(vbo)
 
         # setup normals
         glEnableClientState(GL_NORMAL_ARRAY)
-        vbonorm = VBO(normals)
+        vbonorm = Display.make_vbo(normals)
         vbonorm.bind()
         glNormalPointerf(vbonorm)
 
-        # glDrawArrays(GL_TRIANGLES, 0, 6)
+        indices = Display.make_numpy_indices(indices)
         if draw_type == 'triangles':
             glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, \
                 indices.tostring())
@@ -188,7 +214,7 @@ if __name__ == '__main__':
                 [  2, 0, 2 ],                 \
             ], 'f')
 
-    indices = array([0, 1, 1, 2, 2, 3, 3, 0], 'uint32')
+    indices = array([0, 1, 1, 2, 2, 1, 3, 4, 4, 5, 5, 3], 'uint32')
 
     normals = array([                               \
                 # 1st triangle
@@ -227,7 +253,8 @@ if __name__ == '__main__':
         display.predraw()
         display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (4, 0, 0))
         display.draw_solid_cube(3, (0, 0, 1), (-4, 0, 0))
-        display.draw_lines(vertices, indices, normals, (0, 1, 0), 2)
+        display.draw_lines(vertices_vbo, indices_idx, normals_vbo, \
+            (0, 1, 0), 2)
         display.postdraw()
 
     print('Goodbye, World')

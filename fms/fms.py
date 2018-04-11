@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import nested_scopes
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
@@ -9,8 +10,9 @@ from geometry.mapobject import *
 import display.display as dp
 import sys
 from numpy import *
+import osm.osm as osm
 
-vertices  =  array(                               \
+vertices  =                               \
             [
                 # 1st triangle
                 [  0, 1, 0 ],                  \
@@ -20,11 +22,11 @@ vertices  =  array(                               \
                 [  0, 0, 0 ],                  \
                 [  -2, 0, 2 ],                \
                 [  2, 0, 2 ],                 \
-            ], 'f')
+            ]
 
-indices = array([0, 1, 2, 3, 4, 5], 'uint32')
+indices = [0, 1, 1, 2, 2, 0, 3, 4, 4, 5, 5, 3]
 
-normals = array([                               \
+normals = [                               \
                 # 1st triangle
                 [0, 0, 1],                    \
                 [0, 0, 1],                    \
@@ -33,11 +35,15 @@ normals = array([                               \
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
-            ], 'f')
+            ]
 
 
 def main():
     print('Hello World')
+    
+    m = osm.make_osm_map("The Map", sys.argv[1])
+    print(m.get_extent())
+    
     display = dp.Display('test', projection='perspective')
     display.create()
 
@@ -46,6 +52,10 @@ def main():
     eye = (-4, -5, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
+
+    vertices_vbo = dp.Display.make_vbo(vertices)
+    normals_vbo = dp.Display.make_vbo(normals)
+    indices_idx = dp.Display.make_numpy_indices(indices)
 
     theta = 0
     while True:
@@ -66,9 +76,10 @@ def main():
         display.predraw()
         display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (3, 0, 0))
         display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
-        display.draw_triangles(vertices, indices, normals, (0, 1, 1))
+        display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
 
+    display.quit()
     print('Goodbye, World')
 
 if __name__ == '__main__':
