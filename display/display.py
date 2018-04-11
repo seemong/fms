@@ -179,16 +179,16 @@ if __name__ == '__main__':
     vertices  =  array(                               \
             [
                 # 1st triangle
-                [  0, 1, 0 ],                  \
-                [ -1, 0, 0 ],                  \
-                [  1,-0, 0 ],                  \
+                [  -1, 0, 0 ],                  \
+                [  1, 0, 0 ],                  \
+                [  1, 1, 0 ],                  \
                 # 2nd triangle
-                [  0, 0, 0 ],                  \
+                [  -1, 1, 0 ],                  \
                 [  -2, 0, 2 ],                \
                 [  2, 0, 2 ],                 \
             ], 'f')
 
-    indices = array([0, 1, 2, 3, 4, 5], 'uint32')
+    indices = array([0, 1, 1, 2, 2, 3, 3, 0], 'uint32')
 
     normals = array([                               \
                 # 1st triangle
@@ -201,10 +201,10 @@ if __name__ == '__main__':
                 [0, 1, 0],                    \
             ], 'f')
 
-    position = (-4, 4, 4)
+    position = (0, -4, 0)
     display.set_light_position(position)
 
-    eye = (-4, -5, 5)
+    eye = (0, -5, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
 
@@ -227,7 +227,7 @@ if __name__ == '__main__':
         display.predraw()
         display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (4, 0, 0))
         display.draw_solid_cube(3, (0, 0, 1), (-4, 0, 0))
-        display.draw_triangles(vertices, indices, normals, (0, 1, 0), 2)
+        display.draw_lines(vertices, indices, normals, (0, 1, 0), 2)
         display.postdraw()
 
     print('Goodbye, World')
