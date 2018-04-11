@@ -124,10 +124,10 @@ class Map(Mapobject):
         self.__last_node_index = self.__last_way_index = 0
 
         # initialize the extents of the map
-        self.__max_lon = -180.0
-        self.__min_lon = 180.0
-        self.__max_lat = -90.0
-        self.__min_lat = 90.0
+        self.__max_lon = float('-inf')
+        self.__min_lon = float('inf')
+        self.__max_lat = float('-inf')
+        self.__min_lat = float('inf')
 
         # store node indices for faster access
         self.__node_segments_for_way = dict()

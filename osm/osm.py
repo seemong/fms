@@ -7,14 +7,18 @@ import time
 import argparse
 from geometry.mapobject import *
 
+def _to_mercator(arc):
+    """Take degrees of arc and multiply it to get a mercator number"""
+    return arc * 11112
+
 def _make_osm_node(elem):
     """
     Make a Node out of the OSM XML element
     """
     assert elem.tag == 'node'
     id = elem.get('id')
-    lat = float(elem.get('lat'))
-    lon = float(elem.get('lon'))
+    lat = _to_mercator(float(elem.get('lat')))
+    lon = _to_mercator(float(elem.get('lon')))
 
     return Node(id, (lon, lat, 0))
 
@@ -46,7 +50,6 @@ def _make_osm_way(elem, m):
         return w
 
     # convert meters to lat/lon coords
-    ele = ele / (60 * 1852)
     for id in w.get_node_ids():
         node = m.get_node_from_id(id)
         node.set_altitude(ele)

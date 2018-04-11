@@ -52,18 +52,8 @@ def main():
     #init GL
     glutInit()
     glEnable(GL_DEPTH_TEST)
+    glEnable(GL_CULL_FACE)
     glShadeModel(GL_SMOOTH)
-
-    # set projection transform
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    # gluPerspective(90, 1, 0.1, 100)
-    glOrtho(-2, 2, -2, 2, 0.1, 50)
-
-    # set viewingtransform
-    # glMatrixMode(GL_MODELVIEW)
-    # glLoadIdentity()
-    # gluLookAt(0, 5, 5, 0, 0, 0, 0, 1, 0)
 
     # init lights
     glEnable(GL_LIGHTING)
@@ -78,6 +68,17 @@ def main():
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_COLOR_MATERIAL)
 
+    # set projection transform
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(90, 1, 0.1, 100)
+    # glOrtho(-2, 2, -2, 2, 0.1, 50)
+
+    # set viewingtransform
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    gluLookAt(0, 5, 5, 0, 0, 0, 0, 1, 0)
+    
     x = 20
     y = 10
     z = 10
@@ -121,7 +122,7 @@ def main():
         glutSolidCube(2)
         glPopMatrix()
         """
-        
+
         glColor(1.0, 1.0, 0.0)
         glEnableClientState(GL_VERTEX_ARRAY);
         vbo.bind()

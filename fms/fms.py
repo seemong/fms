@@ -44,21 +44,23 @@ def main():
     m = osm.make_osm_map("The Map", sys.argv[1])
     min_lon, min_lat, max_lon, max_lat = m.get_extent()
 
-    display = dp.Display('test', projection='perspective')
+    display = dp.Display('test')
     display.create()
-
-    # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -50, 50)
 
     position = (min_lon, min_lat, 4)
     display.set_light_position(position)
-    eye = (min_lon, min_lat, 0.05)
+    eye = (min_lon, min_lat, 5000)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
+    otherside = (max_lon, max_lat, 0)
     up = (0, 0, 1)
     print('eye', eye)
     print('center', center)
+    print('distance', center[0] - eye[0])
     radius = (max_lat - min_lat) / 2
 
-    display.lookAt(eye, center, up)
+    # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
+    display.set_perspective(50, 1, 0.1, 10000)
+    display.lookAt(eye, otherside, up)
 
     # vertices_vbo = dp.Display.make_vbo(vertices)
     # normals_vbo = dp.Display.make_vbo(normals)
@@ -80,16 +82,16 @@ def main():
 
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         # theta += 0.1
-        # position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
+        # eye= (5 * math.sin(theta), -5 * math.cos(theta), position[2])
         # display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
         display.predraw()
-        # display.draw_solid_sphere(radius, 10, 10, (1, 0, 0), center)
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
         for w in m.get_all_ways():
             indices = m.get_node_segment_indices_for_way(w)
             display.draw_lines(vertices, indices, normals, (0, 1, 1))
+        display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
         # print(clock.tick())

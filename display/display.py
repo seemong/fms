@@ -58,13 +58,12 @@ class Display(object):
     def set_perspective(self, fovy, aspect, zNear, zFar):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerpective(fovy, aspect, zNear, zFar)
+        gluPerspective(fovy, aspect, zNear, zFar)
 
     def set_ortho(self, left, right, bottom, top, near, far):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glOrtho(left, right, bottom, top, near, far)
-
 
     def create(self):
         """Initialize and create display on the screen"""
@@ -81,9 +80,9 @@ class Display(object):
         glShadeModel(GL_SMOOTH)
 
         # init projection
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(90, 1, 0.0001, 10000)
+        # glMatrixMode(GL_PROJECTION)
+        # glLoadIdentity()
+        # gluPerspective(90, 1, 0.0001, 10000)
 
         # init lights
         glEnable(GL_LIGHTING)
@@ -197,42 +196,15 @@ class Display(object):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
 
 if __name__ == '__main__':
-    vertices  =  array(                               \
-            [
-                # 1st triangle
-                [  -1, 0, 0 ],                  \
-                [  1, 0, 0 ],                  \
-                [  1, 1, 0 ],                  \
-                # 2nd triangle
-                [  -1, 1, 0 ],                  \
-                [  -2, 0, 2 ],                \
-                [  2, 0, 2 ],                 \
-            ], 'f')
-
-    indices = array([0, 1, 1, 2, 2, 1, 3, 4, 4, 5, 5, 3], 'uint32')
-
-    normals = array([                               \
-                # 1st triangle
-                [0, 0, 1],                    \
-                [0, 0, 1],                    \
-                [0, 0, 1],                    \
-                #2nd triangle
-                [0, 1, 0],                    \
-                [0, 1, 0],                    \
-                [0, 1, 0],                    \
-            ], 'f')
-
     print('Hello World')
-    display = Display('test', projection='ortho')
+    display = Display('test')
     display.create()
-
-    display.set_ortho(-2, 2, -2, 2, -1.5, 2)
-    # display.lookAt((0, 0, 5), (0, 0, 0), (0, 0, 1))
-
-    position = (0, -4, 0)
+    display.set_perspective(90, 1, 0.1, 50)
+    display.lookAt((-5, 5, 0), (0, 0, 0), (0, 0, 1))
+    position = (4, 4, 0)
     display.set_light_position(position)
 
-    eye = (0, -5, 5)
+    eye = (0, 0, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
 
@@ -247,9 +219,9 @@ if __name__ == '__main__':
             break
 
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
-        theta += 0.1
-        position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
-        display.set_light_position(position)
+        # theta += 0.1
+        # position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
+        # display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
         display.predraw()
