@@ -83,7 +83,6 @@ class Way(Mapobject):
     def __init__(self, id):
         super().__init__(id)
         self.__node_ids = []
-        self.__attribs = dict()
 
     def __str__(self):
         return "Way(" + self.get_id() + '):' + \
@@ -102,6 +101,10 @@ class Way(Mapobject):
         Add this node with the given id to the way
         """
         self.__node_ids.append(node_id)
+
+    def get_elevation(self):
+        """Return elevation if there is one"""
+        return float(self.get_attrib('ele'))
 
 
 class Map(Mapobject):
