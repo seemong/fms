@@ -36,25 +36,17 @@ normals = [                               \
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
             ]
-            
-def _connect_indices(indices):
-    result = []
-    for i in range(0, len(indices)):
-        result.append(indices[i])
-        if i > 0 and i < len(indices) - 1:
-            result.append(indices[i])
-    return result
 
 
 def main():
     print('Hello World')
-    
+
     m = osm.make_osm_map("The Map", sys.argv[1])
     min_lon, min_lat, max_lon, max_lat = m.get_extent()
-        
+
     display = dp.Display('test', projection='ortho')
     display.create()
-    
+
     display.set_ortho(min_lon, max_lon, min_lat, max_lat, -50, 50)
 
     position = (min_lon, min_lat, 4)
@@ -69,9 +61,9 @@ def main():
     # vertices_vbo = dp.Display.make_vbo(vertices)
     # normals_vbo = dp.Display.make_vbo(normals)
     # indices_idx = dp.Display.make_numpy_indices(indices)
-    
+
     vertices = m.get_all_node_coords()
-        
+
     theta = 0
     while True:
         quit = False
@@ -92,7 +84,7 @@ def main():
         # display.draw_solid_sphere(radius, 10, 10, (1, 0, 0), center)
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
         for w in m.get_all_ways():
-            indices = _connect_indices(m.get_node_indices_for_way(w)
+            indices = m.get_node_segment_indices_for_way(w)
             display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
 
