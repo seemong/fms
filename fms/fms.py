@@ -44,19 +44,21 @@ def main():
     m = osm.make_osm_map("The Map", sys.argv[1])
     min_lon, min_lat, max_lon, max_lat = m.get_extent()
 
-    display = dp.Display('test', projection='ortho')
+    display = dp.Display('test', projection='perspective')
     display.create()
 
-    display.set_ortho(min_lon, max_lon, min_lat, max_lat, -50, 50)
+    # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -50, 50)
 
     position = (min_lon, min_lat, 4)
     display.set_light_position(position)
-    eye = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 10)
+    eye = (min_lon, min_lat, 0.01)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
     up = (0, 0, 1)
     print('eye', eye)
     print('center', center)
     radius = (max_lat - min_lat) / 2
+
+    display.lookAt(eye, center, up)
 
     # vertices_vbo = dp.Display.make_vbo(vertices)
     # normals_vbo = dp.Display.make_vbo(normals)

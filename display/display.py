@@ -64,7 +64,7 @@ class Display(object):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glOrtho(left, right, bottom, top, near, far)
-        
+
 
     def create(self):
         """Initialize and create display on the screen"""
@@ -83,7 +83,7 @@ class Display(object):
         # init projection
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(90, 1, 0.1, 100)
+        gluPerspective(90, 1, 0.0001, 10000)
 
         # init lights
         glEnable(GL_LIGHTING)
@@ -129,11 +129,11 @@ class Display(object):
         glColor(color)
         glutSolidCube(size)
         glPopMatrix()
-        
+
     def quit(self):
         pygame.display.quit()
         pygame.quit()
-        
+
     @classmethod
     def make_vbo(cls, a):
         """
@@ -147,7 +147,7 @@ class Display(object):
         else:
             print(type(a))
             return a
-         
+
     @classmethod
     def make_numpy_indices(cls, a):
         """
@@ -158,7 +158,7 @@ class Display(object):
             return array(a, 'uint32')
         else:
             return a
-        
+
     def draw_vertices(self, vertices, indices, normals, color, size, draw_type):
         """Helper method to draw a line"""
 
@@ -220,15 +220,15 @@ if __name__ == '__main__':
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
-            ], 'f')    
-            
+            ], 'f')
+
     print('Hello World')
     display = Display('test', projection='ortho')
     display.create()
-    
+
     display.set_ortho(-2, 2, -2, 2, -1.5, 2)
     # display.lookAt((0, 0, 5), (0, 0, 0), (0, 0, 1))
-    
+
     position = (0, -4, 0)
     display.set_light_position(position)
 

@@ -15,37 +15,40 @@ def _make_osm_node(elem):
     id = elem.get('id')
     lat = float(elem.get('lat'))
     lon = float(elem.get('lon'))
-    
+
     return Node(id, (lon, lat, 0))
-    
-def _make_osm_way(elem):
+
+def _make_osm_way(elem, map):
     """
-    Make a Way out of the OSM XML tree. 
-    Update all nodes to have the altitude if it's an elevation 
+    Make a Way out of the OSM XML tree.
+    Update all nodes to have the altitude if it's an elevation
     contour
     """
     id = elem.get('id')
     w = Way(id)
-    
+
     # get all nodes belonging to the way
     for nd in elem.findall('nd'):
         node_id = nd.get('ref')
         w.add_node_id(node_id)
-        
+
     # find all the associated attributes
     for tag in elem.findall('tag'):
         k = tag.get('k')
         v = tag.get('v')
         w.add_attrib(k, v)
-        
+
     # check for elevation contours
     try:
         ele = float(w.get_attrib('ele'))
-        for n in w.get_nodes():
-            n.set_altitude(ele)
     except:
-        pass
-        
+        return w
+
+    for id in w.get_node_ids():
+        node = map.get_node_from_id(id)
+        node.set_altitude(ele)
+        print(node, ele)
+
     return w
 
 def make_osm_map(name, osmf):
@@ -64,7 +67,7 @@ def make_osm_map(name, osmf):
 
     # The map we will return
     m = Map(name)
-    
+
     # save flag determines whether or not to save the XML tree
     # in memory. If it's not set, the tree and elements are freed
     # at each iteration, in order to save on memory
@@ -80,14 +83,14 @@ def make_osm_map(name, osmf):
             save = False
         elif event == 'end' and elem.tag == 'way':
             # tree = etree.ElementTree(elem)
-            way = _make_osm_way(elem)
+            way = _make_osm_way(elem, m)
             m.add_way(way)
             save = False
 
         if not save:
             elem.clear()
             root.clear()
-    
+
     # clear the tree at the end
     root.clear()
 
