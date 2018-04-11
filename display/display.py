@@ -55,14 +55,14 @@ class Display(object):
             center[0], center[1], center[2],     \
             up[0], up[1], up[2])
 
-
-    def set_perspective(fovy, aspect, zNear, zFar):
+    def set_perspective(self, fovy, aspect, zNear, zFar):
         glMatrixMode(GL_PROJECTION)
         gluPerpective(fovy, aspect, zNear, zFar)
 
-    def ortho(left, right, bottom, top, near, far):
+    def set_ortho(self, left, right, bottom, top, near, far):
         glMatrixMode(GL_PROJECTION)
         glOrtho(left, right, bottom, top, near, far)
+        
 
     def create(self):
         """Initialize and create display on the screen"""
@@ -81,10 +81,7 @@ class Display(object):
         # init projection
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        if self.projection == 'perspective' :
-            gluPerspective(90, 1, 0.1, 100)
-        else:
-            glOrtho(-4, 4, -4, 4, 0.1, 50)
+        gluPerspective(90, 1, 0.1, 100)
 
         # init lights
         glEnable(GL_LIGHTING)
@@ -198,10 +195,6 @@ class Display(object):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
 
 if __name__ == '__main__':
-    print('Hello World')
-    display = Display('test', projection='perspective')
-    display.create()
-
     vertices  =  array(                               \
             [
                 # 1st triangle
@@ -225,8 +218,15 @@ if __name__ == '__main__':
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
                 [0, 1, 0],                    \
-            ], 'f')
-
+            ], 'f')    
+            
+    print('Hello World')
+    display = Display('test', projection='ortho')
+    display.create()
+    
+    display.set_ortho(-2, 2, -2, 2, 0.1, 50)
+    display.lookAt((0, 0, 5), (0, 0, 0), (0, 0, 1))
+    
     position = (0, -4, 0)
     display.set_light_position(position)
 
@@ -251,9 +251,9 @@ if __name__ == '__main__':
         display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (4, 0, 0))
-        display.draw_solid_cube(3, (0, 0, 1), (-4, 0, 0))
-        display.draw_lines(vertices_vbo, indices_idx, normals_vbo, \
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
+        #display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
+        display.draw_lines(vertices, indices, normals, \
             (0, 1, 0), 2)
         display.postdraw()
 

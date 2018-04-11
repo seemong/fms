@@ -42,20 +42,31 @@ def main():
     print('Hello World')
     
     m = osm.make_osm_map("The Map", sys.argv[1])
-    print(m.get_extent())
+    # min_lon, min_lat, max_lon, max_lat = m.get_extent()
     
-    display = dp.Display('test', projection='perspective')
+    min_lon = -2
+    max_lon = 2
+    min_lat = -2
+    max_lat = 2
+    
+    display = dp.Display('test', projection='ortho')
     display.create()
+    
+    display.set_ortho(min_lon, max_lon, min_lat, max_lat, 0.1, 50)
 
-    position = (-4, 4, 4)
+    position = (min_lon, min_lat, 4)
     display.set_light_position(position)
-    eye = (-4, -5, 5)
-    center = (0, 0, 0)
+    eye = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 10)
+    center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
     up = (0, 0, 1)
+    print('eye', eye)
+    print('center', center)
 
-    vertices_vbo = dp.Display.make_vbo(vertices)
-    normals_vbo = dp.Display.make_vbo(normals)
-    indices_idx = dp.Display.make_numpy_indices(indices)
+    # vertices_vbo = dp.Display.make_vbo(vertices)
+    # normals_vbo = dp.Display.make_vbo(normals)
+    # indices_idx = dp.Display.make_numpy_indices(indices)
+    
+    vertices = m.get_all_node_coords_numpy()
 
     theta = 0
     while True:
@@ -67,16 +78,16 @@ def main():
         if quit:
             break
 
-        eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
-        theta += 0.1
-        position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
-        display.set_light_position(position)
+        # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
+        # theta += 0.1
+        # position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
+        # display.set_light_position(position)
         display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (3, 0, 0))
-        display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
-        display.draw_lines(vertices, indices, normals, (0, 1, 1))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), center)
+        # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
+        # display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
 
     display.quit()

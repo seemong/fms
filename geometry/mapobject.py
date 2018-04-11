@@ -180,11 +180,11 @@ class Map(Mapobject):
             
     def get_extent(self):
         """
-        Return the extent of the map in terms of the tuple
-        (min_lon, min_lat, max_long, max_lat)
+        Return the extent of the map 
+        min_lon, min_lat, max_long, max_lat
         """
-        return (self.__min_lon, self.__min_lat, \
-            self.__max_lon, self.__max_lat)
+        return self.__min_lon, self.__min_lat, \
+            self.__max_lon, self.__max_lat
         
     def get_all_ways(self):
         """Get list of ways to this map"""
@@ -235,6 +235,7 @@ if __name__ == '__main__':
     print(m.get_all_node_coords())
     print(m.get_node_indices_for_way(w))
     print(m.get_all_node_coords_numpy())
-    print(m.get_extent())
+    min_lon, min_lat, max_lon, max_lat = m.get_extent()
+    print(min_lon, min_lat, max_lon, max_lat)
 
 
