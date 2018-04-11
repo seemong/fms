@@ -92,7 +92,7 @@ def main():
         # display.draw_solid_sphere(radius, 10, 10, (1, 0, 0), center)
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
         for w in m.get_all_ways():
-            indices = _connect_indices(m.get_node_indices_for_way(w))
+            indices = _connect_indices(m.get_node_indices_for_way(w)
             display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
 
