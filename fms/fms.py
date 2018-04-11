@@ -51,7 +51,7 @@ def main():
 
     position = (min_lon, min_lat, 4)
     display.set_light_position(position)
-    eye = (min_lon, min_lat, 0.01)
+    eye = (min_lon, min_lat, 0.05)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
     up = (0, 0, 1)
     print('eye', eye)
@@ -92,7 +92,7 @@ def main():
             display.draw_lines(vertices, indices, normals, (0, 1, 1))
         display.postdraw()
 
-        print(clock.tick())
+        # print(clock.tick())
 
     display.quit()
     print('Goodbye, World')

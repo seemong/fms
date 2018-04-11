@@ -18,7 +18,7 @@ def _make_osm_node(elem):
 
     return Node(id, (lon, lat, 0))
 
-def _make_osm_way(elem, map):
+def _make_osm_way(elem, m):
     """
     Make a Way out of the OSM XML tree.
     Update all nodes to have the altitude if it's an elevation
@@ -42,12 +42,14 @@ def _make_osm_way(elem, map):
     try:
         ele = float(w.get_attrib('ele'))
     except:
+        print('No elevation')
         return w
 
+    # convert meters to lat/lon coords
+    ele = ele / (60 * 1852)
     for id in w.get_node_ids():
-        node = map.get_node_from_id(id)
+        node = m.get_node_from_id(id)
         node.set_altitude(ele)
-        print(node, ele)
 
     return w
 
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     assert len(sys.argv) == 2
     m = make_osm_map("The Map", sys.argv[1])
     ways = m.get_all_ways()
-    for w in ways:
-        print(w.get_id(), m.get_node_indices_for_way(w))
-    min_lon, min_lat, max_lon, max_lat = m.get_extent()
-    print(min_lon, min_lat, max_lon, max_lat)
+    w = ways[0]
+    for id in w.get_node_ids():
+        n = m.get_node_from_id(id)
+        print(n)
