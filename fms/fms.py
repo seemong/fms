@@ -11,6 +11,7 @@ import display.display as dp
 import sys
 from numpy import *
 import osm.osm as osm
+from esri.esri import *
 
 vertices  =                               \
             [
@@ -45,8 +46,9 @@ def make_eye(r, theta, dispx, dispy):
 def main():
     print('Hello World')
 
-    m = osm.make_osm_map("The Map", sys.argv[1], 20, 1)
-    min_lon, min_lat, max_lon, max_lat = m.get_extent()
+    # m = osm.make_osm_map("The Map", sys.argv[1], 20, 1)
+    e = Esri(sys.argv[1])
+    min_lon, min_lat, max_lon, max_lat = e.get_extent()
 
     display = dp.Display('test', width=1920, height=1080)
     display.create()
@@ -70,7 +72,8 @@ def main():
     # normals_vbo = dp.Display.make_vbo(normals)
     # indices_idx = dp.Display.make_numpy_indices(indices)
 
-    vertices = m.get_all_node_coords()
+    # vertices = m.get_all_node_coords()
+    vertices = e.vertices()
 
     clock = pygame.time.Clock()
 
@@ -91,14 +94,18 @@ def main():
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, eye[2])
         # display.set_light_position(position)
-        display.lookAt(eye, center, up)
+        # display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
-        for w in m.get_all_ways():
-            indices = m.get_node_segment_indices_for_way(w)
-            display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
+        # for w in m.get_all_ways():
+        #    indices = m.get_node_segment_indices_for_way(w)
+        #    display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        indices = e.indices()
+        display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
+
+
         display.postdraw()
 
         # print(clock.tick())

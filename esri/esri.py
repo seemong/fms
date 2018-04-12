@@ -11,7 +11,6 @@ class Esri(object):
     def _read_esri_header(cls, line, key):
         split = line.split()
         assert split[0] == key
-        print(split)
         return split[1]
 
     def __init__(self, filename):
@@ -119,9 +118,18 @@ class Esri(object):
             i += 1
         return indices
 
+    def get_extent(self):
+        return Esri._to_mercator(self.xllcorner), \
+            Esri._to_mercator(self.yllcorner),     \
+            Esri._to_mercator(self.xllcorner + self.cellsize * self.ncols),   \
+            Esri._to_mercator(self.yllcorner + self.cellsize * self.nrows)
+
+
 
 if __name__ == '__main__':
     esri = Esri(sys.argv[1])
     # esri.filter(-121.90, 46.75, -121.56, 46.96)
     v = esri.vertices()
+    i = esri.indices()
     print(v)
+    # print(i)
