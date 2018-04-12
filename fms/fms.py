@@ -45,10 +45,10 @@ def make_eye(r, theta, dispx, dispy):
 def main():
     print('Hello World')
 
-    m = osm.make_osm_map("The Map", sys.argv[1], 50, 300)
+    m = osm.make_osm_map("The Map", sys.argv[1], 20, 1)
     min_lon, min_lat, max_lon, max_lat = m.get_extent()
 
-    display = dp.Display('test')
+    display = dp.Display('test', width=1920, height=1080)
     display.create()
 
     position = (min_lon, min_lat, 4)
@@ -97,7 +97,7 @@ def main():
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
         for w in m.get_all_ways():
             indices = m.get_node_segment_indices_for_way(w)
-            display.draw_lines(vertices, indices, normals, (0, 1, 1))
+            display.draw_lines(vertices, indices, normals, (1, 1, 0))
         # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
