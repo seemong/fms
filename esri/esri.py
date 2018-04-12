@@ -108,7 +108,7 @@ class Esri(object):
         indices = []
         i = 0
         # for row in range(0, self.nrows):
-        for row in range(0, self.nrows):
+        for row in range(0, 1):
             indices.append(i)
             i += 1
             for col in range(0, self.ncols-1):
@@ -134,5 +134,6 @@ if __name__ == '__main__':
     v = esri.vertices()
     i = esri.indices()
     print(v)
+    print(len(v))
     print(i)
     print(len(i))

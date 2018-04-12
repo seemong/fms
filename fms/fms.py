@@ -94,7 +94,7 @@ def main():
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, eye[2])
         display.set_light_position(position)
-        display.lookAt(eye, center, up)
+        # display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
