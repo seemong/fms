@@ -50,7 +50,7 @@ def main():
     e = Esri(sys.argv[1])
     min_lon, min_lat, max_lon, max_lat = e.get_extent()
 
-    display = dp.Display('test', width=1920, height=1080)
+    display = dp.Display('test', width=800, height=800)
     display.create()
 
     position = (min_lon, min_lat, 4)
@@ -93,8 +93,8 @@ def main():
         # eye = (eye[0] + delta_x, eye[1], eye[2])
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, eye[2])
-        # display.set_light_position(position)
-        # display.lookAt(eye, center, up)
+        display.set_light_position(position)
+        display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
@@ -103,8 +103,7 @@ def main():
         #    display.draw_lines(vertices, indices, normals, (1, 1, 0))
         indices = e.indices()
         display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
-
+        # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
 
         display.postdraw()
 

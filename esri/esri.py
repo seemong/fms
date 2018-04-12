@@ -100,13 +100,14 @@ class Esri(object):
             for col in range(0, self.ncols):
                 x = Esri._to_mercator(self.xllcorner + self.cellsize * col)
                 y = Esri._to_mercator(self.yllcorner + (self.nrows - row - 1) * self.cellsize)
-                z = float(split[col])
+                z = float(split[col])/3
                 v.append([x, y, z])
         return v
 
     def indices(self):
         indices = []
         i = 0
+        # for row in range(0, self.nrows):
         for row in range(0, self.nrows):
             indices.append(i)
             i += 1
@@ -116,6 +117,7 @@ class Esri(object):
                 i += 1
             indices.append(i)
             i += 1
+
         return indices
 
     def get_extent(self):
@@ -132,4 +134,5 @@ if __name__ == '__main__':
     v = esri.vertices()
     i = esri.indices()
     print(v)
-    # print(i)
+    print(i)
+    print(len(i))
