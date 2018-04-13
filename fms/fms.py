@@ -61,7 +61,7 @@ def main():
     display = dp.Display('test', width=800, height=800)
     display.create()
 
-    position = (min_lon, min_lat, 4)
+    position = (min_lon, min_lat, 1000)
     display.set_light_position(position)
     eye = (min_lon, min_lat, 2000)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
@@ -81,8 +81,10 @@ def main():
     # indices_idx = dp.Display.make_numpy_indices(indices)
 
     # vertices = m.get_all_node_coords()
-    vertices = VBO(array(e.vertices(), 'f'))
-    indices = array(e.indices(), 'uint32')
+    vertices = VBO(array(e.get_vertices(), 'f'))
+    triangle_indices = array(e.get_triangle_indices(), 'uint32')
+    # mesh_indices = array(e.get_mesh_indices(), 'uint32')
+    normals = VBO(array(e.get_normals(), 'f'))
 
     clock = pygame.time.Clock()
 
@@ -110,7 +112,9 @@ def main():
         # for w in m.get_all_ways():
         #    indices = m.get_node_segment_indices_for_way(w)
         #    display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        # display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        display.draw_triangle_strip(vertices, triangle_indices, normals, (0.3, 0.2, 0.7))
+        # display.draw_lines(vertices, mesh_indices, normals, (1, 0, 0))
         # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
 
         display.postdraw()

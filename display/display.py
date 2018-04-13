@@ -183,7 +183,10 @@ class Display(object):
         elif draw_type == 'lines':
             glDrawElements(GL_LINES, len(indices), GL_UNSIGNED_INT, \
                 indices.tostring())
-
+        elif draw_type == 'triangle_strip':
+            glDrawElements(GL_TRIANGLE_STRIP, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
+                
         # clean up
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
@@ -193,19 +196,50 @@ class Display(object):
 
     def draw_lines(self, vertices, indices, normals, color, size=1):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
+        
+    def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
+        self.draw_vertices(vertices, indices, normals, color, size, 'triangle_strip')
 
 if __name__ == '__main__':
     print('Hello World')
     display = Display('test')
     display.create()
     display.set_perspective(90, 1, 0.1, 50)
-    display.lookAt((-5, 5, 0), (0, 0, 0), (0, 0, 1))
+    display.lookAt((0, 5, 5), (0, 0, 0), (0, 1, 0))
     position = (4, 4, 0)
     display.set_light_position(position)
 
     eye = (0, 0, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
+    
+    vertices = array(               \
+        [                           \
+                [0.0, 1.0, 0.0],    \
+                [1.0, 1.0, 0.0],    \
+                [2.0, 1.0, 0.0],    \
+                [3.0, 1.0, 0.0],    \
+                [0.0, 0.0, 0.0],    \
+                [1.0, 0.0, 0.0],    \
+                [2.0, 0.0, 0.0],    \
+                [3.0, 0.0, 0.0],    \
+                [4.0, 0.0, 0.0]     \
+        ], 'f')
+        
+    indices = array([0, 4, 1, 5, 2, 6, 3, 7], 'uint32')
+     
+        
+    normals = array(            \
+        [                        \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+                [0.0, 0.0, 1.0], \
+        ], 'f')
 
     theta = 0
     while True:
@@ -224,10 +258,11 @@ if __name__ == '__main__':
         # display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
+        display.draw_solid_sphere(1, 10, 10, (1, 0, 0), (6, 0, 0))
         # display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
         #display.draw_lines(vertices, indices, normals, \
         #    (0, 1, 0), 2)
+        display.draw_triangle_strip(vertices, indices, normals, (1, 0, 0))
         display.postdraw()
 
     print('Goodbye, World')

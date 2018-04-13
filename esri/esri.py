@@ -2,6 +2,7 @@ from __future__ import print_function
 import fileinput
 import sys
 import math
+import numpy
 import os
 
 class Esri(object):
@@ -33,6 +34,8 @@ class Esri(object):
 
         line = self.file.readline()
         self.NODATA_value = float(Esri._read_esri_header(line, 'NODATA_value'))
+        
+        self.vertices = None
 
         self.data_start = self.file.tell()
 
@@ -89,10 +92,13 @@ class Esri(object):
         """Take degrees of arc and multiply it to get a mercator number"""
         return arc * 11112
 
-    def vertices(self):
+    def get_vertices(self):
+        if not self.vertices == None:
+            return self.vertices
+            
         self.file.seek(self.data_start, os.SEEK_SET)
 
-        v = []
+        self.vertices = []
         for row in range(0, self.nrows):
             line = self.file.readline()
             split = line.split()
@@ -101,10 +107,11 @@ class Esri(object):
                 x = Esri._to_mercator(self.xllcorner + self.cellsize * col)
                 y = Esri._to_mercator(self.yllcorner + (self.nrows - row - 1) * self.cellsize)
                 z = float(split[col])/3
-                v.append([x, y, z])
-        return v
+                self.vertices.append([x, y, z])
+                
+        return self.vertices
 
-    def indices(self):
+    def get_mesh_indices(self):
         indices = []
         
         # return east/west lines
@@ -134,6 +141,19 @@ class Esri(object):
             i += self.ncols
   
         return indices
+        
+    def get_triangle_indices(self):
+        indices = []
+        
+        i = 0
+        for row in range(0, self.nrows - 1):
+            for col in range(0, self.ncols ):
+                indices.append(i)
+                indices.append(i+self.ncols)
+                i += 1
+            
+        return indices
+            
 
     def get_extent(self):
         return Esri._to_mercator(self.xllcorner), \
@@ -141,6 +161,36 @@ class Esri(object):
             Esri._to_mercator(self.xllcorner + self.cellsize * self.ncols),   \
             Esri._to_mercator(self.yllcorner + self.cellsize * self.nrows)
 
+    def get_neighbors(self, row, col):
+        n1_x = col
+        if row < self.nrows - 1:
+            n1_y = row + 1
+        else:
+            n1_y = row - 1
+            
+        n2_y = row
+        if col < self.ncols - 1:
+            n2_x = col + 1
+        else:
+            n2_x = col - 1
+            
+        vertices = self.get_vertices()
+        v1 = vertices[n1_x + n1_y * self.ncols]
+        v2 = vertices[n2_x + n2_y * self.ncols]
+        return v1, v2
+
+    def get_normals(self):
+        normals = numpy.zeros((self.nrows * self.ncols, 3), dtype='float')
+        for row in range(0, self.nrows):
+            for col in range(0, self.ncols):
+                v1, v2 = self.get_neighbors(row, col)
+                norm = numpy.cross(v1, v2)
+                if norm[2] >= 0:
+                    normals[col + row * self.ncols] = norm
+                else:
+                    normals[col + row * self.ncols] = -1 * norm 
+                
+        return normals
 
 
 if __name__ == '__main__':
