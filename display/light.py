@@ -23,7 +23,7 @@ vbo = VBO(
 )
 
 vertex_indices = array(
-    [0, 1, 2, 3, 4, 5], 'uint32')
+    [0, 1, 1, 2, 2, 0], 'uint32')
 
 
 normals = VBO(
@@ -109,11 +109,11 @@ def main():
         x = 5 * math.sin(theta)
         z = 5 * math.cos(theta)
 
-        glPushMatrix()
-        glColor(0, 0, 1)
+        # glPushMatrix()
+        #glColor(0, 0, 1)
         # glTranslate(-3, 0, -2)
-        glutSolidSphere(2, 50, 40)
-        glPopMatrix()
+        # glutSolidSphere(2, 50, 40)
+        # glPopMatrix()
 
         """
         glPushMatrix()
@@ -133,7 +133,8 @@ def main():
         glNormalPointerf(normals)
 
         # glDrawArrays(GL_TRIANGLES, 0, 6)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, vertex_indices.tostring())
+        # glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, vertex_indices.tostring())
+        glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, vertex_indices.tostring())
 
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)

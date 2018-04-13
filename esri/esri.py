@@ -106,18 +106,33 @@ class Esri(object):
 
     def indices(self):
         indices = []
+        
+        # return east/west lines
         i = 0
-        # for row in range(0, self.nrows):
-        for row in range(0, 1):
+        for row in range(0, self.nrows):
+        # for row in range(0, 1):
             indices.append(i)
             i += 1
-            for col in range(0, self.ncols-1):
+            for col in range(1, self.ncols-1):
                 indices.append(i)
                 indices.append(i)
                 i += 1
             indices.append(i)
             i += 1
-
+            
+        # return north/south lines
+        for col in range(0, self.ncols):
+        # for col in range(0, 1):
+            i = col
+            indices.append(i)
+            i += self.ncols
+            for row in range(1, self.nrows-1):
+                indices.append(i)
+                indices.append(i)
+                i += self.ncols
+            indices.append(i)
+            i += self.ncols
+  
         return indices
 
     def get_extent(self):
@@ -133,7 +148,8 @@ if __name__ == '__main__':
     # esri.filter(-121.90, 46.75, -121.56, 46.96)
     v = esri.vertices()
     i = esri.indices()
-    print(v)
+    # print(v)
+    print(esri.nrows, esri.ncols)
     print(len(v))
     print(i)
     print(len(i))

@@ -144,7 +144,6 @@ class Display(object):
         elif type(a) == np.ndarray:
             return VBO(a)
         else:
-            print(type(a))
             return a
 
     @classmethod

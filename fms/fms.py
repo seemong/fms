@@ -5,6 +5,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from OpenGL.arrays.vbo import *
+from OpenGLContext.arrays import *
 import math
 from geometry.mapobject import *
 import display.display as dp
@@ -42,6 +44,12 @@ def make_eye(r, theta, dispx, dispy):
     x = r * math.cos(theta) + dispx
     y = r * math.sin(theta) + dispy
     return x, y
+    
+def make_normals(count):
+    normals = zeros(count, 3)
+    for i in range(0, count):
+        normals[i] = [0.0, 0.0, 1.0]
+    return normals
 
 def main():
     print('Hello World')
@@ -73,7 +81,8 @@ def main():
     # indices_idx = dp.Display.make_numpy_indices(indices)
 
     # vertices = m.get_all_node_coords()
-    vertices = e.vertices()
+    vertices = VBO(array(e.vertices(), 'f'))
+    indices = array(e.indices(), 'uint32')
 
     clock = pygame.time.Clock()
 
@@ -94,14 +103,13 @@ def main():
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, eye[2])
         display.set_light_position(position)
-        # display.lookAt(eye, center, up)
+        display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
         # for w in m.get_all_ways():
         #    indices = m.get_node_segment_indices_for_way(w)
         #    display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        indices = e.indices()
         display.draw_lines(vertices, indices, normals, (1, 1, 0))
         # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
 
