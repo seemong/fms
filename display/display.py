@@ -210,13 +210,14 @@ if __name__ == '__main__':
     display.create()
     display.set_perspective(90, 1, 0.1, 50)
     display.lookAt((0, 5, 5), (0, 0, 0), (0, 1, 0))
-    position = (4, 4, 0)
-    display.set_light_position(position)
+    position = (40, 10, 4)
+    # display.set_light_position(position)
 
     eye = (0, 0, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
     
+    """
     vertices = array(               \
         [                           \
                 [0.0, 1.0, 0.0],    \
@@ -244,6 +245,7 @@ if __name__ == '__main__':
                 [0.0, 0.0, 1.0], \
                 [0.0, 0.0, 1.0], \
         ], 'f')
+        """
 
     theta = 0
     while True:
@@ -256,17 +258,17 @@ if __name__ == '__main__':
             break
 
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
-        # theta += 0.1
+        theta += 0.1
         position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
         display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(1, 10, 10, (1, 0, 0), (0, 0, 0))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
         # display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
         #display.draw_lines(vertices, indices, normals, \
         #    (0, 1, 0), 2)
-        display.draw_triangle_strip(vertices, indices, normals, (1, 0, 0))
+        # display.draw_triangle_strip(vertices, indices, normals, (1, 0, 0))
         display.postdraw()
 
     print('Goodbye, World')

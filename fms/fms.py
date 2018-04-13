@@ -61,8 +61,7 @@ def main():
     display = dp.Display('test', width=800, height=800)
     display.create()
 
-    position = (min_lon, min_lat, 1000)
-    display.set_light_position(position)
+
     eye = (min_lon, min_lat, 2000)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
     otherside = (max_lon, max_lat, 0)
@@ -71,7 +70,10 @@ def main():
     print('center', center)
     print('distance', center[0] - eye[0])
     radius = (max_lat - min_lat) / 2
-
+    
+    position = (center[0], center[1], 10000)
+    display.set_light_position(position)
+    
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     display.set_perspective(90, 1, 0.1, 10000)
     display.lookAt(eye, center, up)
@@ -105,8 +107,8 @@ def main():
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, eye[2])
         position = (x, y, position[2])
-        display.set_light_position(position)
-        # display.lookAt(eye, center, up)
+        # display.set_light_position(position)
+        display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
@@ -120,7 +122,7 @@ def main():
 
         display.postdraw()
 
-        # print(clock.tick())
+        # print(clock.tick(), position)
 
     display.quit()
     print('Goodbye, World')
