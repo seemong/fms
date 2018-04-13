@@ -60,7 +60,7 @@ def main():
     # set up light 0
     ambient = (0.2, 0.2, 0.2, 1.0)
     diffuse = ( 1.0, 1.0, 1.0, 1.0 )
-    position = ( 0.0, 10.0, 2.0 )
+    position = ( 0.0, 10.0, 2.0, 1.0 )
     glEnable(GL_LIGHT0)
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);

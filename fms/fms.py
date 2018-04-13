@@ -71,8 +71,8 @@ def main():
     print('distance', center[0] - eye[0])
     radius = (max_lat - min_lat) / 2
     
-    position = (center[0], center[1], 10000)
-    display.set_light_position(position)
+    position = (min_lon, min_lat, 1000)
+    # display.set_light_position(position)
     
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     display.set_perspective(90, 1, 0.1, 10000)
@@ -104,11 +104,11 @@ def main():
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         theta += 0.1
         # eye = (eye[0] + delta_x, eye[1], eye[2])
-        x, y = make_eye(radius, theta, center[0], center[1])
+        x, y = make_eye(radius * 2, theta, center[0], center[1])
         eye = (x, y, eye[2])
-        position = (x, y, position[2])
-        # display.set_light_position(position)
-        display.lookAt(eye, center, up)
+        position = (1000 * math.sin(theta), -1000 * math.cos(theta), 1000.0, 0.0)
+        display.set_light_position(position)
+        # display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
@@ -118,7 +118,8 @@ def main():
         # display.draw_lines(vertices, indices, normals, (1, 1, 0))
         display.draw_triangle_strip(vertices, triangle_indices, normals, (0.7, 0.2, 0.5))
         # display.draw_lines(vertices, mesh_indices, normals, (1, 0, 0))
-        # display.draw_solid_sphere(10, 10, 10, (1, 0, 0), center)
+        spos = (center[0], center[1], 0)
+        #display.draw_solid_sphere(500, 10, 10, (1, 0, 0), spos)
 
         display.postdraw()
 

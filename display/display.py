@@ -89,7 +89,7 @@ class Display(object):
         # set up light 0
         ambient = (0.15, 0.15, 0.15, 1.0)      # default is dim white
         diffuse = ( 1.0, 1.0, 1.0, 1.0 )       # default is white light
-        position = ( 0.0, 0.0, 0.0 )           # default is origin
+        position = ( 0.0, 0.0, 1.0, 0.0 )      # default is directional from z
         glEnable(GL_LIGHT0)
         glLightfv(GL_LIGHT0, GL_AMBIENT, ambient)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse)
@@ -99,11 +99,14 @@ class Display(object):
 
     def set_light_position(self, position):
         """Set the position of the one light in the display"""
+        """
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
         glLightfv(GL_LIGHT0, GL_POSITION, position)
         glPopMatrix()
+        """
+        glLightfv(GL_LIGHT0, GL_POSITION, position)
 
     def get_events(self):
         """Return the pygame events"""
@@ -209,15 +212,14 @@ if __name__ == '__main__':
     display = Display('test')
     display.create()
     display.set_perspective(90, 1, 0.1, 50)
-    display.lookAt((0, 5, 5), (0, 0, 0), (0, 1, 0))
-    position = (40, 10, 4)
+    display.lookAt((0, 0, 0), (20, 20, 0), (0, 1, 0))
+    position = (40, 10, 100, 1.0)
     # display.set_light_position(position)
 
     eye = (0, 0, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
     
-    """
     vertices = array(               \
         [                           \
                 [0.0, 1.0, 0.0],    \
@@ -245,7 +247,11 @@ if __name__ == '__main__':
                 [0.0, 0.0, 1.0], \
                 [0.0, 0.0, 1.0], \
         ], 'f')
-        """
+
+
+    eye = (980, 980, 10)
+    center = (1000, 1000, 0)
+    display.lookAt(eye, center, up)
 
     theta = 0
     while True:
@@ -259,12 +265,12 @@ if __name__ == '__main__':
 
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         theta += 0.1
-        position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
+        position = (10 * math.sin(theta), -10 * math.cos(theta), 10, 0.0)
         display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), (0, 0, 0))
+        display.draw_solid_sphere(2, 10, 10, (1, 0, 0), center)
         # display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
         #display.draw_lines(vertices, indices, normals, \
         #    (0, 1, 0), 2)
