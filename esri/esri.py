@@ -5,6 +5,13 @@ import math
 import numpy
 import os
 
+def normalize(v):
+    size = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
+    v[0] = v[0] / size
+    v[1] = v[1] / size
+    v[2] = v[2] / size
+    return v
+
 class Esri(object):
     """Represents an ESRI ASCII file"""
 
@@ -178,18 +185,22 @@ class Esri(object):
         v1 = vertices[n1_x + n1_y * self.ncols]
         v2 = vertices[n2_x + n2_y * self.ncols]
         return v1, v2
+    
+
 
     def get_normals(self):
+        vertices = self.get_vertices()
         normals = numpy.zeros((self.nrows * self.ncols, 3), dtype='float')
         for row in range(0, self.nrows):
             for col in range(0, self.ncols):
+                coord = numpy.array(vertices[col + row * self.ncols], 'f')
                 v1, v2 = self.get_neighbors(row, col)
-                norm = numpy.cross(v1, v2)
+                norm = normalize(numpy.cross(v1 - coord, v2 - coord))
                 if norm[2] >= 0:
                     normals[col + row * self.ncols] = norm
                 else:
                     normals[col + row * self.ncols] = -1 * norm 
-                
+          
         return normals
 
 

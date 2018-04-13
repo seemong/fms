@@ -99,7 +99,11 @@ class Display(object):
 
     def set_light_position(self, position):
         """Set the position of the one light in the display"""
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
         glLightfv(GL_LIGHT0, GL_POSITION, position)
+        glPopMatrix()
 
     def get_events(self):
         """Return the pygame events"""
@@ -253,12 +257,12 @@ if __name__ == '__main__':
 
         # eye = (4 * math.sin(theta), 4 * math.cos(theta) , eye[2])
         # theta += 0.1
-        # position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
-        # display.set_light_position(position)
+        position = (4 * math.sin(theta), -4 * math.cos(theta), position[2])
+        display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
         display.predraw()
-        display.draw_solid_sphere(1, 10, 10, (1, 0, 0), (6, 0, 0))
+        display.draw_solid_sphere(1, 10, 10, (1, 0, 0), (0, 0, 0))
         # display.draw_solid_cube(2, (0, 0, 1), (-4, 0, 0))
         #display.draw_lines(vertices, indices, normals, \
         #    (0, 1, 0), 2)

@@ -109,19 +109,18 @@ def main():
         x = 5 * math.sin(theta)
         z = 5 * math.cos(theta)
 
-        # glPushMatrix()
-        #glColor(0, 0, 1)
-        # glTranslate(-3, 0, -2)
-        # glutSolidSphere(2, 50, 40)
-        # glPopMatrix()
+        glPushMatrix()
+        glColor(0, 0, 1)
+        glTranslate(-3, 0, -2)
+        glutSolidSphere(2, 50, 40)
+        glPopMatrix()
 
-        """
+
         glPushMatrix()
         glTranslate(2, 2, -4)
         glColor(1.0, 0.0, 0.0)
         glutSolidCube(2)
         glPopMatrix()
-        """
 
         glColor(1.0, 1.0, 0.0)
         glEnableClientState(GL_VERTEX_ARRAY);
