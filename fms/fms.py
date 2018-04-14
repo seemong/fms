@@ -106,7 +106,7 @@ def main():
         # eye = (eye[0] + delta_x, eye[1], eye[2])
         x, y = make_eye(radius * 2, theta, center[0], center[1])
         eye = (x, y, eye[2])
-        position = (1000 * math.sin(theta), -1000 * math.cos(theta), 1000.0, 0.0)
+        position = (1000 * math.sin(theta), -1000 * math.cos(theta), 500.0, 0.0)
         display.set_light_position(position)
         # display.lookAt(eye, center, up)
 
