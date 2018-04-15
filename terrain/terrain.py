@@ -6,6 +6,9 @@ import os
 import numpy
 import hgt
 import math
+import geofile
+import hgt
+import tif
 
 def normalize(v):
     size = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
@@ -71,6 +74,11 @@ class Terrain(object):
         pass
 
 if __name__ == '__main__':
-    terrain = Terrain()
-    terrain.add_data('data/hgt15')
+    #h = hgt.HgtFile(sys.argv[1])
+    #print(h.read_data())
+    
+    t = tif.TifFile(sys.argv[2])
+    print(t)
+    print(t.read_data())
+    
     

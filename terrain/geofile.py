@@ -9,90 +9,25 @@ from osgeo import gdal
 
 SECONDSPERDEGREE = 3600
 
-class HgtFile(object):
+class GeoFile(object):
     """
-    Implements a generic HGT file.
+    Implements a an abstract Geo file representing either
+    hgt, tif or esri formats.
     """
     def __init__(self, filename):
-        self._filename = filename
-        if re.search(r'\.hgt$', filename) != None:
-            self._filetype = 'hgt'
-            self._init_hgt(filename)
-        elif re.search(r'\.tif$', filename) != None:
-            self._filetype = tif
-            self._init_tif(filename)
-        else:
-            raise Exception('not a HGT or TIF file')
+        self._filename = filename     
         
+        # these values initialized by concrete subclass  
+        self._rows = 0
+        self._cols = 0
+        self._xincrement = 0
+        self._yincrement = 0
+        self._xbot = 0
+        self._ybot = 0
+        self._xtop = 0
+        self._ytop = 0
         # no data -- read only on request
         self_zs = None
-        
-    def _init_hgt(self, filename):
-        """
-        Init a HGT file. All HGT files are square and 
-        have an arc of 1 second
-        """
-        stat = os.stat(filename)
-        size = stat.st_size
-        if size == 1201 * 1201 * 2:
-            self._arc = 3
-        elif size == 3601 * 3601 * 2:
-            self._arc = 1
-        else:
-            raise Exception('HGT file is not 1 or 3 arc seconds')
-    
-        self._xincrement = 1.0/(SECONDSPERDEGREE/self._arc)
-        self._yincrement = self._xincrement
-        self._rows = self._cols = SECONDSPERDEGREE/self._arc + 1
-        
-        basename = os.path.basename(filename)
-        self._xbot, self._ybot, self._xtop, self._ytop= \
-            HgtFile._parseHgtFilename(basename)
-                        
-    def _init_tif(self, filename):
-        """
-        Init a tif file using gdal. Metadata indicates the 
-        extent of the data.
-        """
-        self._g = gdal.Open(sys.argv[1])
-        self._cols = g.RasterXSize
-        self._rows = g.RasterYSize
-        count = g.RasterCount
-        gt = g.GetGeoTransform()
-        self._xtop = gt[0]
-        self._xincrement = gt[1]
-    
-        self._ytop = gt[3]
-        self._yincrement = -gt[5]
-        
-        self._xbot = self._xtop * self._xincrement * (self._cols - 1)
-        self._ybot = self._ytop * self._yincrement * (self._rows - 1)
-               
-    @classmethod
-    def _parseHgtFilename(cls, filename):
-        """
-        The filename implicitly defines the southwest coordinates
-        Split out filename and get lower left lon and lat and 
-        upper left and upper right.
-        The top corner is 1 minute away in both directions
-        """
-        # do north/south
-        ns = filename[0:1]
-        lat = float(filename[1:3])
-        if ns.lower() == 's':
-            lat = -lat
-        
-        # do east west
-        ew = filename[3:4]
-        lon = float(filename[4:7])
-        if ew.lower() == 'w':
-            lon = -lon
-        
-        return lon, lat, lon + 1, lat + 1
-        
-    def get_arc(self):
-        """Return how many seconds of arc for this file"""
-        return _self.arc
         
     def get_xbottom(self):
         """Return lat coordinates of southwest corner"""
@@ -131,19 +66,9 @@ class HgtFile(object):
         The table is a two dimensional 
         numpy array, going from north to south for each row.
         Within each column, it goes from west to east.
-
+        Reading data sets self.zs
         """
-        if self._zs != None:
-            return self_sz
-        elif self._filetype == 'hgt':
-            data = numpy.fromfile(self._filename, dtype=">i2")
-            self._zs = \
-                data.reshape(self._rows, self._cols).astype("float32")
-        elif self._filetype == 'tif':
-            self._zs = self._g.ReadAsArray()
-        else:
-            raise Exception('Unknown file type')   
-        return self._zs
+        raise NotImplementedError()
         
     def free_data(self):
         """Free z elevation data read from file"""
@@ -230,13 +155,7 @@ def make_triangle_indices(nrows, ncols):
             
     return indices
 
-        
-if __name__ == '__main__':
-    # hgtf = Hgt3File(sys.argv[1])
-    f = HgtFile(sys.argv[1])
-    print(f)
-    s = f.get_zslice(-121.56, 46.74, -121.21, 46.9)
-    print(s)
+
 
     
 
