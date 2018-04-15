@@ -16,11 +16,16 @@ class HgtFile(object):
     def __init__(self, filename):
         self._filename = filename
         if re.search(r'\.hgt$', filename) != None:
+            self._filetype = 'hgt'
             self._init_hgt(filename)
         elif re.search(r'\.tif$', filename) != None:
+            self._filetype = tif
             self._init_tif(filename)
         else:
             raise Exception('not a HGT or TIF file')
+        
+        # no data -- read only on request
+        self_zs = None
         
     def _init_hgt(self, filename):
         """
@@ -43,17 +48,13 @@ class HgtFile(object):
         basename = os.path.basename(filename)
         self._xbot, self._ybot, self._xtop, self._ytop= \
             HgtFile._parseHgtFilename(basename)
-            
-        data = numpy.fromfile(self._filename, dtype=">i2")
-        self._zs = \
-            data.reshape(self._rows, self._cols).astype("float32")
-            
+                        
     def _init_tif(self, filename):
         """
         Init a tif file using gdal. Metadata indicates the 
         extent of the data.
         """
-        g = gdal.Open(sys.argv[1])
+        self._g = gdal.Open(sys.argv[1])
         self._cols = g.RasterXSize
         self._rows = g.RasterYSize
         count = g.RasterCount
@@ -66,8 +67,6 @@ class HgtFile(object):
         
         self._xbot = self._xtop * self._xincrement * (self._cols - 1)
         self._ybot = self._ytop * self._yincrement * (self._rows - 1)
-    
-        self._zs = g.ReadAsArray()
                
     @classmethod
     def _parseHgtFilename(cls, filename):
@@ -124,14 +123,31 @@ class HgtFile(object):
         """How many rows there are in the data file"""
         return self._rows
         
-    def get_zs(self):
+    def read_data(self):
         """
+        This function reads from the abstracted file depending on
+        the file type.
         Return the z data table, with the data in English reading order.
         The table is a two dimensional 
         numpy array, going from north to south for each row.
-        Within each column, it goes from west to east
+        Within each column, it goes from west to east.
+
         """
-        return self._z
+        if self._zs != None:
+            return self_sz
+        elif self._filetype == 'hgt':
+            data = numpy.fromfile(self._filename, dtype=">i2")
+            self._zs = \
+                data.reshape(self._rows, self._cols).astype("float32")
+        elif self._filetype == 'tif':
+            self._zs = self._g.ReadAsArray()
+        else:
+            raise Exception('Unknown file type')   
+        return self._zs
+        
+    def free_data(self):
+        """Free z elevation data read from file"""
+        self._zs = None
         
     def _get_indices(self, x, y):
         """Helper method: return x and y indices for the given coords"""
@@ -141,6 +157,7 @@ class HgtFile(object):
         
     def get_z(self, x, y):
         """Return z at given x and y"""
+        self.read_data()
         xindex, yindex = self._get_indices(x, y)
         return self._zs[xindex, yindex]
         
@@ -150,6 +167,7 @@ class HgtFile(object):
         bounding box given of left, bottom, top, right
         Raises an index out of bounds error if the bounds are too large
         """
+        self.read_data()
         xb, yb = self._get_indices(left, bottom)
         xt, yt = self._get_indices(top, right)
         return self._zs[xt:xb+1,yt:yb+1]

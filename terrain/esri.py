@@ -187,8 +187,7 @@ class Esri(object):
         return v1, v2
     
 
-
-    def get_normals(self):
+    def get_normals(vertices):
         vertices = self.get_vertices()
         normals = numpy.zeros((self.nrows * self.ncols, 3), dtype='float')
         for row in range(0, self.nrows):
