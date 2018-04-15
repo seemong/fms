@@ -5,7 +5,6 @@ import sys
 import os
 import numpy
 import re
-import pdb
 from osgeo import gdal
 
 SECONDSPERDEGREE = 3600
