@@ -16,31 +16,47 @@ class GeoFile(object):
     """
     def __init__(self, filename):
         self._filename = filename     
+
+        self._g = gdal.Open(filename)
+        self._cols = self._g.RasterXSize
+        self._rows = self._g.RasterYSize
+        count = self._g.RasterCount
+        gt = self._g.GetGeoTransform()
+        self._left = gt[0]
+        self._xincrement = gt[1]
+    
+        self._top = gt[3]
+        self._yincrement = -gt[5]
         
-        # these values initialized by concrete subclass  
-        self._rows = 0
-        self._cols = 0
-        self._xincrement = 0
-        self._yincrement = 0
-        self._xbot = 0
-        self._ybot = 0
-        self._xtop = 0
-        self._ytop = 0
-        # no data -- read only on request
-        self_zs = None
+        self._right = self._left +  self._xincrement * (self._cols - 1)
+        self._bottom = self.top - self._yincrement * (self._rows - 1)
+               
+    def read_data(self, row=0, col=0, numrows=None, numcols=None):
+        """
+        Read a slice from the geofile with row, col
+        """
+        return self._g.ReadAsArray(row, col, numrows, numcols)
         
-    def get_xbottom(self):
-        """Return lat coordinates of southwest corner"""
-        return self._xbottom
+    def get_left(self):
+        """Return lat coordinates of western border"""
+        return self._left
         
-    def get_ybottom(self):
-        """Return lon coordinates of southwest corner"""
-        return self._ybottom
+    def get_right(self):
+        """Return lat coordinates of eastern border"""
+        return self._right
+        
+    def get_top(self):
+        """Return lon coordinates of northern"""
+        return self._top
+        
+    def get_bottom(self):
+        """Return lon coordinates of southern"""
+        return self._bottom
         
     def get_extent(self):
-        """Return bottom, left, top, right"""
-        return self._xbottom, self._ybottom, \
-            self._xtop, self._ytop
+        """Return left, bottom, right, top"""
+        return self._left, self._bottom, \
+            self._right, self._top
         
     def get_x_increment(self):
         """Return the x increment for each z data point"""
@@ -58,51 +74,49 @@ class GeoFile(object):
         """How many rows there are in the data file"""
         return self._rows
         
-    def read_data(self):
-        """
-        This function reads from the abstracted file depending on
-        the file type.
-        Return the z data table, with the data in English reading order.
-        The table is a two dimensional 
-        numpy array, going from north to south for each row.
-        Within each column, it goes from west to east.
-        Reading data sets self.zs
-        """
-        raise NotImplementedError()
-        
-    def free_data(self):
-        """Free z elevation data read from file"""
-        self._zs = None
-        
-    def _get_indices(self, x, y):
+    def _xy_to_indices(self, x, y):
         """Helper method: return x and y indices for the given coords"""
-        xindex = int((x - self._xtop)/self._xincrement)
-        yindex = int((y - self._xtop)/self._yincrement)
+        xindex = int((x - self._left)/self._xincrement)
+        yindex = int((y - self._top)/self._yincrement)
         return xindex, yindex
         
-    def get_z(self, x, y):
-        """Return z at given x and y"""
-        self.read_data()
-        xindex, yindex = self._get_indices(x, y)
-        return self._zs[xindex, yindex]
+    def _indices_to_xy(self, row, col):
+        return self._left + col * self._xincrement \
+            self._top + row * self._yincrement
         
-    def get_zslice(self, left, bottom, top, right):
+    def get_slice(self, left, bottom, top, right):
         """
         Return a slice of the data array corresponding to the
         bounding box given of left, bottom, top, right
-        Raises an index out of bounds error if the bounds are too large
+        Raises an index out of bounds error if the bounds are too large.
+        This works in geo coordinates
         """
-        self.read_data()
-        xb, yb = self._get_indices(left, bottom)
-        xt, yt = self._get_indices(top, right)
-        return self._zs[xt:xb+1,yt:yb+1]
+        xb, yb = self._xy_to_indices(left, bottom)
+        xt, yt = self._xy_to_indices(top, right)
+        numx = xb - xt + 1
+        numy = yb - yt + 1
+        return self.read_data(xt, yt, numx, numy)
+        
+    def get_vertices(self, left, bottom, top, right):
+        """
+        Return the set of vertices with coordinates given
+        """
+        data = self.get_slice(left, bottom, top, right)
+        rows, cols = data.shape
+        vertices = numpy.zeros((rows, cols, 3), dtype='float')
+        for row in range(0, len(vertices)):
+            for col in range(0, len(vertices[0])):
+                x = left + self._xincrement * col
+                y = top - self._yincrement * row
+                vertices[row, col] = [x, y, data[row, col]]
+        return vertices
         
     def __str__(self):
         return '{0}: rows({1}), cols({2}), topx({3}), topy({4}), '  \
             'botx({5}), boty({6}), xincr({7}), yincr({8})'        \
             .format(os.path.basename(self._filename), self._rows, \
-                self._cols, self._xtop, self._ytop, self._xbot,   \
-                self._ybot, self._xincrement, self._yincrement)
+                self._cols, self._xtop, self._ytop, self._xbottom,   \
+                self._ybottom, self._xincrement, self._yincrement)
                 
 def make_mesh_indices(nrows, ncols):
     """

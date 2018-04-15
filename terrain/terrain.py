@@ -4,11 +4,9 @@ from builtins import *
 import sys
 import os
 import numpy
-import hgt
 import math
 import geofile
-import hgt
-import tif
+import pdb
 
 def normalize(v):
     size = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
@@ -77,8 +75,9 @@ if __name__ == '__main__':
     #h = hgt.HgtFile(sys.argv[1])
     #print(h.read_data())
     
-    t = tif.TifFile(sys.argv[2])
-    print(t)
-    print(t.read_data())
+    g = geofile.GeoFile(sys.argv[1])
+    print(g)
+    left, bottom, right, top = g.get_extent()
+    print(left, bottom, right, top)
     
     
