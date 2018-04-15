@@ -160,6 +160,58 @@ class HgtFile(object):
             .format(os.path.basename(self._filename), self._rows, \
                 self._cols, self._xtop, self._ytop, self._xbot,   \
                 self._ybot, self._xincrement, self._yincrement)
+                
+def make_mesh_indices(nrows, ncols):
+    """
+    Given nrows and ncols, return the index array that draws a 
+    mesh through the rectangular array
+    """
+    indices = []
+        
+    # return east/west lines
+    i = 0
+    for row in range(0, nrows):
+    # for row in range(0, 1):
+        indices.append(i)
+        i += 1
+        for col in range(1, ncols-1):
+            indices.append(i)
+            indices.append(i)
+            i += 1
+        indices.append(i)
+        i += 1
+        
+    # return north/south lines
+    for col in range(0, ncols):
+    # for col in range(0, 1):
+        i = col
+        indices.append(i)
+        i += self.ncols
+        for row in range(1, nrows-1):
+            indices.append(i)
+            indices.append(i)
+            i += ncols
+        indices.append(i)
+        i += ncols
+  
+    return indices
+        
+def make_triangle_indices(nrows, ncols):  
+    """"
+    Given nrows and ncols, return a clockwise triangle strip
+    suitable for rendering by OpenGL
+    """
+    indices = []
+        
+    i = 0
+    for row in range(0, nrows - 1):
+        for col in range(0, ncols ):
+            indices.append(i)
+            indices.append(i+ncols)
+            i += 1
+            
+    return indices
+
         
 if __name__ == '__main__':
     # hgtf = Hgt3File(sys.argv[1])
