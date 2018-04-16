@@ -71,7 +71,7 @@ def main():
 
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, geofile.meters_to_arc(3000))
-        # display.lookAt(eye, center, (0, 0, 1))
+        display.lookAt(eye, center, (0, 0, 1))
         theta += 0.1
 
         position = (10 * math.sin(theta), -10 * math.cos(theta), 10, 0.0)
