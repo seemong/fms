@@ -1,7 +1,6 @@
 from __future__ import print_function
 from __future__ import nested_scopes
 from builtins import *
-import sys
 import os
 import numpy
 import re
@@ -29,7 +28,7 @@ class GeoFile(object):
         self._yincrement = -gt[5]
         
         self._right = self._left +  self._xincrement * (self._cols - 1)
-        self._bottom = self.top - self._yincrement * (self._rows - 1)
+        self._bottom = self._top - self._yincrement * (self._rows - 1)
                
     def read_data(self, row=0, col=0, numrows=None, numcols=None):
         """
@@ -76,47 +75,55 @@ class GeoFile(object):
         
     def _xy_to_indices(self, x, y):
         """Helper method: return x and y indices for the given coords"""
-        xindex = int((x - self._left)/self._xincrement)
-        yindex = int((y - self._top)/self._yincrement)
-        return xindex, yindex
+        col = int((x - self._left)/self._xincrement)
+        row = int((self._top - y)/self._yincrement)
+        return col, row
         
     def _indices_to_xy(self, row, col):
-        return self._left + col * self._xincrement \
-            self._top + row * self._yincrement
+        x = self._left + col * self._xincrement
+        y = self._top - row * self._yincrement
+        return x, y
         
-    def get_slice(self, left, bottom, top, right):
+    def get_data_slice(self, left, bottom, right, top):
         """
         Return a slice of the data array corresponding to the
         bounding box given of left, bottom, top, right
         Raises an index out of bounds error if the bounds are too large.
-        This works in geo coordinates
+        This works in geo coordinates.
         """
         xb, yb = self._xy_to_indices(left, bottom)
-        xt, yt = self._xy_to_indices(top, right)
-        numx = xb - xt + 1
+        xt, yt = self._xy_to_indices(right, top)
+        numx = xt - xb + 1
         numy = yb - yt + 1
-        return self.read_data(xt, yt, numx, numy)
+        return self.read_data(xb, yt, numx, numy)
         
     def get_vertices(self, left, bottom, top, right):
         """
-        Return the set of vertices with coordinates given
+        Return the set of vertices in mercator coordinates
+        as a 1D numpy array
+        with the slice box coordinates given. Return also
+        as second and third arguments the number of rows and cols.
+        
         """
-        data = self.get_slice(left, bottom, top, right)
+        data = self.get_data_slice(left, bottom, top, right)
         rows, cols = data.shape
-        vertices = numpy.zeros((rows, cols, 3), dtype='float')
-        for row in range(0, len(vertices)):
-            for col in range(0, len(vertices[0])):
-                x = left + self._xincrement * col
-                y = top - self._yincrement * row
-                vertices[row, col] = [x, y, data[row, col]]
-        return vertices
+        i = 0
+        vertices = numpy.zeros((rows * cols, 3), dtype='float')
+        for row in range(0, rows):
+            for col in range(0, cols):
+                x = _to_mercator(left + self._xincrement * col)
+                y = _to_mercator(top - self._yincrement * row)
+                vertices[i] = [x, y, data[row, col]]
+                i += 1
+
+        return vertices, rows, cols
         
     def __str__(self):
-        return '{0}: rows({1}), cols({2}), topx({3}), topy({4}), '  \
-            'botx({5}), boty({6}), xincr({7}), yincr({8})'        \
+        return '{0}: rows({1}), cols({2}), left({3}), bottom({4}), '  \
+            'top({5}),right({6}), xincr({7}), yincr({8})'        \
             .format(os.path.basename(self._filename), self._rows, \
-                self._cols, self._xtop, self._ytop, self._xbottom,   \
-                self._ybottom, self._xincrement, self._yincrement)
+                self._cols, self._left, self._bottom, self._top,   \
+                self._right, self._xincrement, self._yincrement)
                 
 def make_mesh_indices(nrows, ncols):
     """
@@ -143,7 +150,7 @@ def make_mesh_indices(nrows, ncols):
     # for col in range(0, 1):
         i = col
         indices.append(i)
-        i += self.ncols
+        i += ncols
         for row in range(1, nrows-1):
             indices.append(i)
             indices.append(i)
@@ -155,8 +162,8 @@ def make_mesh_indices(nrows, ncols):
         
 def make_triangle_indices(nrows, ncols):  
     """"
-    Given nrows and ncols, return a clockwise triangle strip
-    suitable for rendering by OpenGL
+    Given nrows and ncols, return a counter clockwise triangle strip
+    suitable for rendering by OpenGL. 
     """
     indices = []
         
@@ -168,11 +175,37 @@ def make_triangle_indices(nrows, ncols):
             i += 1
             
     return indices
-
-
-
     
+def flatten_rectangular_vertices(v):
+    rows, cols, elts = v.shape
+    return v.reshape((rows * cols, elts))
+    
+def _to_mercator(arc):
+    """Take degrees of arc and multiply it to get a mercator number"""
+    return arc * 11112
 
+
+if __name__ == '__main__':
+    import sys
+    import pdb
+    
+    g = GeoFile(sys.argv[1])
+    print(g)
+    left, bottom, right, top = g.get_extent()
+    print(left, bottom, right, top)
+    d = g.get_data_slice(-122.45, 47.527, -122.192, 47.7167)
+    print(d)
+    
+    pdb.set_trace()
+    v = g.get_vertices(-122.45, 47.527, -122.192, 47.7167)
+    print(v)
+    rows, cols, _ = v.shape
+    
+    rows, cols, _ = v.shape
+    mi = make_mesh_indices(rows, cols)
+    # print(mi)
+    ti = make_triangle_indices(rows, cols)
+    # print(ti)
     
 
     

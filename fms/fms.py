@@ -13,7 +13,8 @@ import display.display as dp
 import sys
 from numpy import *
 import osm.osm as osm
-from esri.esri import *
+# from esri.esri import *
+import terrain.geofile as geofile
 
 vertices  =                               \
             [
@@ -55,8 +56,10 @@ def main():
     print('Hello World')
 
     # m = osm.make_osm_map("The Map", sys.argv[1], 20, 1)
-    e = Esri(sys.argv[1])
-    min_lon, min_lat, max_lon, max_lat = e.get_extent()
+    # e = Esri(sys.argv[1])
+    # min_lon, min_lat, max_lon, max_lat = e.get_extent()
+    g = geofile.GeoFile(sys.argv[1])
+    min_lon, min_lat, max_lon, max_lat = g.get_extent()
 
     display = dp.Display('test', width=800, height=800)
     display.create()
@@ -83,11 +86,13 @@ def main():
     # indices_idx = dp.Display.make_numpy_indices(indices)
 
     # vertices = m.get_all_node_coords()
-    vertices = VBO(array(e.get_vertices(), 'f'))
-    triangle_indices = array(e.get_triangle_indices(), 'uint32')
+    # vertices = VBO(array(e.get_vertices(), 'f'))
+    # triangle_indices = array(e.get_triangle_indices(), 'uint32')
     # mesh_indices = array(e.get_mesh_indices(), 'uint32')
-    normals = VBO(array(e.get_normals(), 'f'))
-
+    # normals = VBO(array(e.get_normals(), 'f'))
+    vertices, rows, cols = g.get_vertices(-122.45, 47.527, -122.192, 47.7167)
+    indices = geofile.make_mesh_indices(rows, cols)
+    
     clock = pygame.time.Clock()
 
     theta = 0
@@ -115,8 +120,8 @@ def main():
         # for w in m.get_all_ways():
         #    indices = m.get_node_segment_indices_for_way(w)
         #    display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        # display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        display.draw_triangle_strip(vertices, triangle_indices, normals, (0.7, 0.2, 0.5))
+        display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        # display.draw_triangle_strip(vertices, triangle_indices, normals, (0.7, 0.2, 0.5))
         # display.draw_lines(vertices, mesh_indices, normals, (1, 0, 0))
         spos = (center[0], center[1], 0)
         #display.draw_solid_sphere(500, 10, 10, (1, 0, 0), spos)
