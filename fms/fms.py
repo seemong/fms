@@ -52,6 +52,8 @@ def main():
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -5000, 50000)
     display.set_perspective(90, 1, 0.01, 10000)
+    display.lookAt(((vmin_lon + vmax_lon)/2, vmin_lat, geofile.meters_to_arc(4000)), center, (0, 0, 1))
+
 
     print(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     print('center', center)
@@ -69,8 +71,11 @@ def main():
 
         x, y = make_eye(radius, theta, center[0], center[1])
         eye = (x, y, geofile.meters_to_arc(3000))
-        display.lookAt(eye, center, (0, 0, 1))
+        # display.lookAt(eye, center, (0, 0, 1))
         theta += 0.1
+
+        position = (10 * math.sin(theta), -10 * math.cos(theta), 10, 0.0)
+        display.set_light_position(position)
 
         display.predraw()
         # display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
