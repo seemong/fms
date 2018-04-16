@@ -11,7 +11,7 @@ import math
 from geometry.mapobject import *
 import display.display as dp
 import sys
-from numpy import *
+import numpy
 import osm.osm as osm
 # from esri.esri import *
 import terrain.geofile as geofile
@@ -47,7 +47,7 @@ def make_eye(r, theta, dispx, dispy):
     return x, y
     
 def make_normals(count):
-    normals = zeros(count, 3)
+    normals = numpy.zeros((count, 3))
     for i in range(0, count):
         normals[i] = [0.0, 0.0, 1.0]
     return normals
@@ -65,7 +65,7 @@ def main():
     display.create()
 
 
-    eye = (min_lon, min_lat, 2000)
+    eye = (min_lon, min_lat, 100)
     center = ((min_lon + max_lon) / 2, (min_lat + max_lat)/2, 0)
     otherside = (max_lon, max_lat, 0)
     up = (0, 0, 1)
@@ -77,9 +77,9 @@ def main():
     position = (min_lon, min_lat, 1000)
     # display.set_light_position(position)
     
-    # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
-    display.set_perspective(90, 1, 0.1, 10000)
-    display.lookAt(eye, center, up)
+    display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
+    #display.set_perspective(90, 1, 0.1, 10000)
+    # display.lookAt(eye, center, up)
 
     # vertices_vbo = dp.Display.make_vbo(vertices)
     # normals_vbo = dp.Display.make_vbo(normals)
@@ -90,8 +90,12 @@ def main():
     # triangle_indices = array(e.get_triangle_indices(), 'uint32')
     # mesh_indices = array(e.get_mesh_indices(), 'uint32')
     # normals = VBO(array(e.get_normals(), 'f'))
-    vertices, rows, cols = g.get_vertices(-122.45, 47.527, -122.192, 47.7167)
-    indices = geofile.make_mesh_indices(rows, cols)
+    vertices = g.read_data_as_vertices(0, 0, 10, 10)
+    vertices = vertices.reshape((100, 3))
+    indices = geofile.make_mesh_indices(10, 10)
+    normals = make_normals(100)
+    print(vertices)
+    print(indices)
     
     clock = pygame.time.Clock()
 
@@ -113,7 +117,7 @@ def main():
         eye = (x, y, eye[2])
         position = (1000 * math.sin(theta), -1000 * math.cos(-theta), 500.0, 0.0)
         display.set_light_position(position)
-        display.lookAt(eye, center, up)
+        #display.lookAt(eye, center, up)
 
         display.predraw()
         # display.draw_solid_cube(3, (0, 0, 1), (-3, 0, 0))
@@ -124,7 +128,7 @@ def main():
         # display.draw_triangle_strip(vertices, triangle_indices, normals, (0.7, 0.2, 0.5))
         # display.draw_lines(vertices, mesh_indices, normals, (1, 0, 0))
         spos = (center[0], center[1], 0)
-        #display.draw_solid_sphere(500, 10, 10, (1, 0, 0), spos)
+        display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), spos)
 
         display.postdraw()
 

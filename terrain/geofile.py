@@ -31,11 +31,28 @@ class GeoFile(object):
         self._right = self._left +  self._xincrement * (self._cols - 1)
         self._bottom = self._top - self._yincrement * (self._rows - 1)
                
-    def read_data(self, row=0, col=0, numrows=None, numcols=None):
+    def read_data(self, x=0, y=0, numx=None, numy=None):
         """
         Read a slice from the geofile with row, col
         """
-        return self._g.ReadAsArray(row, col, numrows, numcols)
+        return self._g.ReadAsArray(x, y, numx, numy)
+        
+    def read_data_as_vertices(self, xoff=0, yoff=0, \
+        xsize=None, ysize=None):
+        """
+        Read a slice from the geofile and return as mercator coordinates
+        """
+        data = self.read_data(xoff, yoff, xsize, ysize)
+        rows, cols = data.shape
+        vertices = numpy.zeros((rows, cols, 3), dtype='float')
+        startx = self._left + cols * self._xincrement
+        starty = self._top - rows * self._yincrement
+        for row in range(0, rows):
+            for col in range(0, cols):
+                x = (startx + self._xincrement * col)
+                y = (starty - row * self._yincrement)
+                vertices[row, col] = [x, y, data[row, col]]
+        return vertices
         
     def get_left(self):
         """Return lat coordinates of western border"""
@@ -195,19 +212,16 @@ if __name__ == '__main__':
     print(g)
     left, bottom, right, top = g.get_extent()
     print(left, bottom, right, top)
-    d = g.get_data_slice(-122.45, 47.527, -122.192, 47.7167)
+
+    d = g.read_data(0, 0, 3, 5)
     print(d)
     
-    pdb.set_trace()
-    v = g.get_vertices(-122.45, 47.527, -122.192, 47.7167)
+    v = g.read_data_as_vertices(0, 0, 3, 5).reshape((15, 3))
     print(v)
-    rows, cols, _ = v.shape
     
-    rows, cols, _ = v.shape
-    mi = make_mesh_indices(rows, cols)
-    # print(mi)
-    ti = make_triangle_indices(rows, cols)
-    # print(ti)
+    i = make_mesh_indices(5, 3)
+    print(i)
+    
     
 
     
