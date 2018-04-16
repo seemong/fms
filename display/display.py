@@ -193,7 +193,7 @@ class Display(object):
         elif draw_type == 'triangle_strip':
             glDrawElements(GL_TRIANGLE_STRIP, len(indices), GL_UNSIGNED_INT, \
                 indices.tostring())
-                
+
         # clean up
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
@@ -203,7 +203,7 @@ class Display(object):
 
     def draw_lines(self, vertices, indices, normals, color, size=1):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
-        
+
     def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
         self.draw_vertices(vertices, indices, normals, color, size, 'triangle_strip')
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     eye = (0, 0, 5)
     center = (0, 0, 0)
     up = (0, 0, 1)
-    
+
     vertices = array(               \
         [                           \
                 [0.0, 1.0, 0.0],    \
@@ -232,10 +232,10 @@ if __name__ == '__main__':
                 [3.0, 0.0, 0.0],    \
                 [4.0, 0.0, 0.0]     \
         ], 'f')
-        
+
     indices = array([0, 4, 1, 5, 2, 6, 3, 7], 'uint32')
-     
-        
+
+
     normals = array(            \
         [                        \
                 [0.0, 0.0, 1.0], \

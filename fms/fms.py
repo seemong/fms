@@ -48,7 +48,7 @@ def main():
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lon - vmin_lon)/2
     position = (vmin_lon, vmin_lat, 1000, 0.0)
-    display.set_light_position(position)
+    #display.set_light_position(position)
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -5000, 50000)
     display.set_perspective(90, 1, 0.01, 10000)
