@@ -38,9 +38,12 @@ def main():
 
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
-    vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
-    indices = geofile.make_triangle_indices(rows, cols)
-    normals = make_normals(rows * cols)
+    t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
+    vertices = t.get_vertices()
+    # vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
+    mesh_indices = t.make_mesh_indices()
+    triangle_indices = t.make_triangle_indices()
+    normals = t.make_normals()
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lon - vmin_lon)/2
@@ -70,13 +73,13 @@ def main():
         theta += 0.1
 
         display.predraw()
-        # display.draw_lines(vertices, indices, normals, (1, 1, 0))
-        display.draw_triangle_strip(vertices, indices, normals, (1, 1, 0))
+        # display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
+        display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
-        pygame.time.wait(100)
+        # pygame.time.wait(100)
 
     display.quit()
     print('Goodbye, World')
