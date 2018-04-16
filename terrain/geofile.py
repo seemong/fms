@@ -106,7 +106,7 @@ class GeoFile(object):
         yoff = int((self._top - lat)/self._yincrement)
         return xoff, yoff
 
-    def _boundingbox_to_xyoffsize(self, left, bottom, top, right):
+    def _boundingbox_to_xyoffsize(self, left, bottom, right, top):
         """
         Given coordinates left, bottom, top, right, convert this to
         xoffset, yoffset, xsize and ysize to use to read data
@@ -139,7 +139,7 @@ class GeoFile(object):
         return self.read_data_as_vertices(xoff, yoff, xsize, ysize), \
             ysize, xsize
 
-    def get_tile(self, left, bottom, top, right):
+    def get_tile(self, left, bottom, right, top):
         vertices, rows, cols = self.get_vertices(left, bottom, right, top)
         return GeoTile(vertices, left, bottom, right, top, rows, cols)
 
@@ -241,6 +241,7 @@ def make_normals(vertices, numrows, numcols):
                 normals[col + row * numcols] = norm
             else:
                 normals[col + row * numcols] = -1 * norm
+
     return normals
 
 class GeoTile(object):

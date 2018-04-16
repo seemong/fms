@@ -75,11 +75,11 @@ def main():
         theta += 0.1
 
         position = (10 * math.sin(theta), -10 * math.cos(theta), 10, 0.0)
-        display.set_light_position(position)
+        # display.set_light_position(position)
 
         display.predraw()
-        # display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
-        display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
+        display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
+        # display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
