@@ -45,20 +45,20 @@ class GeoFile(object):
     def read_data_as_vertices(self, xoff=0, yoff=0, \
         xsize=None, ysize=None):
         """
-        Read a slice from the geofile and return as coordinates
-        with the elevation data in units of arc
+        Read a slice from the geofile and return as a 1D numpy
+        array with the elevation data in units of arc
         """
         data = self.read_data(xoff, yoff, xsize, ysize)
         rows, cols = data.shape
-        vertices = numpy.zeros((rows, cols, 3), dtype='float')
-        startx = self._left + cols * self._xincrement
-        starty = self._top - rows * self._yincrement
+        vertices = []
+        startx = self._left + xoff * self._xincrement
+        starty = self._top - yoff * self._yincrement
         for row in range(0, rows):
             for col in range(0, cols):
                 x = (startx + self._xincrement * col)
-                y = (starty - row * self._yincrement)
+                y = (starty - self._yincrement * row)
                 elevation_in_arc = _meters_to_arc(data[row, col])
-                vertices[row, col] = [x, y, elevation_in_arc]
+                vertices.append([x, y, elevation_in_arc])
         return vertices
 
     def get_left(self):
@@ -92,7 +92,7 @@ class GeoFile(object):
 
     def get_cols(self):
         """How many cols there are in the data file"""
-        return _self._cols
+        return self._cols
 
     def get_rows(self):
         """How many rows there are in the data file"""
@@ -128,20 +128,20 @@ class GeoFile(object):
 
     def get_vertices(self, left, bottom, top, right):
         """
-        Return the set of vertices in mercator coordinates
-        as a 1D numpy array
+        Return the set of vertices in as a 1D numpy array
         with the slice box coordinates given. Return also
         as second and third arguments the number of rows and cols.
         """
         xoff, yoff, xsize, ysize = \
             self._boundingbox_to_xyoffsize(left, bottom, right, top)
-        return self.read_data_as_vertices(xoff, yoff, xsize, ysize)
+        return self.read_data_as_vertices(xoff, yoff, xsize, ysize), \
+            ysize, xsize
 
     def __str__(self):
         return '{0}: rows({1}), cols({2}), left({3}), bottom({4}), '  \
-            'top({5}),right({6}), xincr({7}), yincr({8})'        \
-            .format(os.path.basename(self._filename), self._rows, \
-                self._cols, self._left, self._bottom, self._top,   \
+            'top({5}),right({6}), xincr({7}), yincr({8})'             \
+            .format(os.path.basename(self._filename), self._rows,     \
+                self._cols, self._left, self._bottom, self._top,      \
                 self._right, self._xincrement, self._yincrement)
 
 def make_mesh_indices(nrows, ncols):
@@ -215,19 +215,12 @@ if __name__ == '__main__':
     xinc = g.get_x_increment()
     yinc = g.get_y_increment()
 
-    d = g.read_data(0, 0, 3, 5)
-    print(d)
+    v = g.read_data_as_vertices()
+    rows, cols, _ = v.shape
+    print(v[0, 0])
+    print(v[rows-1, cols-1])
 
-    v = g.read_data_as_vertices(0, 0, 3, 5).reshape((15, 3))
-    print(v)
 
-    botx = left
-    boty = top - 4 * yinc
-
-    topx = left + 3 * xinc
-    topy = top
-    v2 = g.get_vertices(botx, boty, topx, topy)
-    print(v2)
 
     #i = make_mesh_indices(5, 3)
     # print(i)
