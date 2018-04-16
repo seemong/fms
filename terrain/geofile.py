@@ -5,6 +5,7 @@ import os
 import numpy
 import re
 from osgeo import gdal
+import pdb
 
 SECONDSPERDEGREE = 3600
 
@@ -109,6 +110,7 @@ class GeoFile(object):
         rows, cols = data.shape
         i = 0
         vertices = numpy.zeros((rows * cols, 3), dtype='float')
+        pdb.set_trace()
         for row in range(0, rows):
             for col in range(0, cols):
                 x = _to_mercator(left + self._xincrement * col)
