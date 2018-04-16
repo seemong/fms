@@ -36,14 +36,15 @@ def main():
     display = dp.Display('test', width=800, height=800)
     display.create()
 
-    vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
+    # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
+    vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
     vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
-    indices = geofile.make_mesh_indices(rows, cols)
+    indices = geofile.make_triangle_indices(rows, cols)
     normals = make_normals(rows * cols)
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
-    position = (center[0], center[1], 1000)
     radius = (vmax_lon - vmin_lon)/2
+    position = (vmin_lon, vmin_lat, 1000, 0.0)
     display.set_light_position(position)
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -5000, 50000)
@@ -64,17 +65,18 @@ def main():
             break
 
         x, y = make_eye(radius, theta, center[0], center[1])
-        eye = (x, y, 0.1)
+        eye = (x, y, geofile.meters_to_arc(3000))
         display.lookAt(eye, center, (0, 0, 1))
         theta += 0.1
 
         display.predraw()
-        display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        # display.draw_lines(vertices, indices, normals, (1, 1, 0))
+        display.draw_triangle_strip(vertices, indices, normals, (1, 1, 0))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
-        # print(clock.tick())
+        pygame.time.wait(100)
 
     display.quit()
     print('Goodbye, World')

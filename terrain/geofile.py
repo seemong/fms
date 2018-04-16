@@ -8,9 +8,9 @@ from osgeo import gdal
 import pdb
 
 SECONDSPERDEGREE = 3600
-ARCPERMETER = 1.0/1852
+ARCPERMETER = 1.0/1852/60
 
-def _meters_to_arc(meters):
+def meters_to_arc(meters):
     """Convert meters to arc units"""
     return meters * ARCPERMETER
 
@@ -57,8 +57,9 @@ class GeoFile(object):
             for col in range(0, cols):
                 x = (startx + self._xincrement * col)
                 y = (starty - self._yincrement * row)
-                elevation_in_arc = _meters_to_arc(data[row, col])
+                elevation_in_arc = meters_to_arc(data[row, col])
                 vertices.append([x, y, elevation_in_arc])
+                # vertices.append([x, y, data[row, col]])
         return vertices
 
     def get_left(self):
@@ -215,10 +216,8 @@ if __name__ == '__main__':
     xinc = g.get_x_increment()
     yinc = g.get_y_increment()
 
-    v = g.read_data_as_vertices()
-    rows, cols, _ = v.shape
-    print(v[0, 0])
-    print(v[rows-1, cols-1])
+    d = g.read_data()
+    print(d.max())
 
 
 
