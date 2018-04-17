@@ -126,7 +126,9 @@ class GeoFile(object):
         """
         xoff, yoff, xsize, ysize = \
             self._boundingbox_to_xyoffsize(left, bottom, right, top)
-        return self.read_data(xb, yt, xsize, ysize)
+        return self.read_data(xoff, yoff, xsize, ysize), xoff, yoff, \
+            xsize, ysize
+        
 
     def get_vertices(self, left, bottom, right, top):
         """
@@ -137,10 +139,17 @@ class GeoFile(object):
         xoff, yoff, xsize, ysize = \
             self._boundingbox_to_xyoffsize(left, bottom, right, top)
         return self.read_data_as_vertices(xoff, yoff, xsize, ysize), \
-            ysize, xsize
+            xoff, yoff, ysize, xsize
 
     def get_tile(self, left, bottom, right, top):
-        vertices, rows, cols = self.get_vertices(left, bottom, right, top)
+        """
+        Get a GeoTile based on the coordinates given
+        """
+        vertices, xoff, yoff, rows, cols = self.get_vertices(left, bottom, right, top)
+        left = self._left + xoff * self._yincrement
+        bottom = self._top - yoff * self._yincrement
+        right = self._left + (xoff + cols - 1) * self._xincrement
+        top = self._top - (yoff + rows - 1) * self._yincrement
         return GeoTile(vertices, left, bottom, right, top, rows, cols)
 
     def __str__(self):
