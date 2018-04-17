@@ -38,6 +38,7 @@ def main():
 
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
+    # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.152375, 47.628326, -122.047918, 47.691152)
     t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     vertices = t.get_vertices()
     # vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
@@ -46,13 +47,14 @@ def main():
     normals = t.make_normals()
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
-    radius = (vmax_lon - vmin_lon)/2
-    position = (vmin_lon, vmin_lat, 1000, 0.0)
-    #display.set_light_position(position)
+    radius = (vmax_lat - vmin_lat)/2
+    position = (vmin_lon, vmin_lat, 10, 0.0)
+    display.set_light_position(position)
     # display.set_ortho(min_lon, max_lon, min_lat, max_lat, -5000, 50000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -5000, 50000)
-    display.set_perspective(90, 1, 0.01, 10000)
-    display.lookAt(((vmin_lon + vmax_lon)/2, vmin_lat, geofile.meters_to_arc(4000)), center, (0, 0, 1))
+    display.set_perspective(90, 1, geofile.meters_to_arc(50), 10000)
+    display.lookAt(((vmin_lon + vmax_lon)/2, vmin_lat, \
+        geofile.meters_to_arc(4000)), center, (0, 0, 1))
 
 
     print(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
@@ -78,8 +80,8 @@ def main():
         # display.set_light_position(position)
 
         display.predraw()
-        display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
-        # display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
+        # display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
+        display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()

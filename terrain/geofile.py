@@ -229,24 +229,25 @@ def make_normals(vertices, numrows, numcols):
     """
     Return normal vectors based on neighbor averaging
     for a 1D vector array that represents a mesh containing
-    the specified number of max rows and cols
+    the specified number of rows and cols
     """
-    normals = numpy.zeros((numrows * numcols, 3), dtype='float')
+    normals = []
     for row in range(0, numrows):
         for col in range(0, numcols):
             coord = numpy.array(vertices[col + row * numcols], 'f')
             v1, v2 = get_neighbors(vertices, row, col, numrows, numcols)
             norm = normalize(numpy.cross(v1 - coord, v2 - coord))
             if norm[2] >= 0:
-                normals[col + row * numcols] = norm
+                normals.append(norm)
             else:
-                normals[col + row * numcols] = -1 * norm
+                normals.append(-1 * norm)
 
     return normals
 
 class GeoTile(object):
     """
-    GeoTile represents a list of vertices
+    GeoTile represents a list of vertices with an extent and a 
+    geometry
     """
     def __init__(self, vertices, left, bottom, right, top, rows, cols):
         self._vertices = vertices
@@ -304,8 +305,17 @@ if __name__ == '__main__':
     print('Reading vertices')
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
     t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
+    cols = t.get_cols()
     n = t.make_normals()
-    print('Got normals')
+    v = t.get_vertices()
+
+    v0 = numpy.array(v[0])
+    v1 = numpy.array(v[1])
+    v2 = numpy.array(v[cols])
+    print(n[0])
+    
+    print(normalize(numpy.cross(v1 - v0, v2 - v0)))
+
     # print(n)
 
 
