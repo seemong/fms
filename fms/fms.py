@@ -81,7 +81,9 @@ def main():
 
         display.predraw()
         # display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
-        display.draw_triangle_strip(vertices, triangle_indices, normals, (1, 1, 0))
+        
+        display.draw_triangle_strip(vertices, triangle_indices, \
+            normals, (97.0/256, 51.0/256, 24.0/256))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
