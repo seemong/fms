@@ -9,7 +9,7 @@ import math
 import pdb
 
 SECONDSPERDEGREE = 3600
-ARCPERMETER = 1.0/1852/60
+ARCPERMETER = 0.000008992800576
 
 def meters_to_arc(meters):
     """Convert meters to arc units"""

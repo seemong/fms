@@ -19,7 +19,8 @@ class Display(object):
     def __init__(self, name = "", x=0, y=0,
         width=800, height=800, projection="perspective",
         eye=(1, 1, 1), center=(0, 0, 0), up = (0, 0, 1),
-        ascension=0, near = 0.1, far = 50):
+                 ascension=0, near = 0.1, far = 50,
+                 clear_color=(135.0/256, 206.0/256, 250.0/256, 1.0)):
         """
         Name describes this display object.
         Position is the position of the display in window coordinates.
@@ -39,6 +40,8 @@ class Display(object):
         self.projection = projection
         self.near = near
         self.far = far
+
+        self.clear_color = clear_color
 
         # pygame attributes
         self.screen = None
@@ -114,6 +117,7 @@ class Display(object):
 
     def predraw(self):
         """Call this before drawing frame"""
+        glClearColor(self.clear_color[0], self.clear_color[1], self.clear_color[2], self.clear_color[3])
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
     def postdraw(self):

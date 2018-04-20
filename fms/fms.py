@@ -33,7 +33,7 @@ def main():
     min_lon, min_lat, max_lon, max_lat = g.get_extent()
     print(min_lon, min_lat, max_lon, max_lat)
 
-    display = dp.Display('test', width=800, height=800)
+    display = dp.Display('test', width=1920, height=1080)
     display.create()
 
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
@@ -80,10 +80,9 @@ def main():
         # display.set_light_position(position)
 
         display.predraw()
-        display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
-        
-        # display.draw_triangle_strip(vertices, triangle_indices, \
-        #    normals, (97.0/256, 51.0/256, 24.0/256))
+        #display.draw_lines(vertices, mesh_indices, normals, (1, 1, 0))
+        display.draw_triangle_strip(vertices, triangle_indices, \
+            normals, (97.0/256, 51.0/256, 24.0/256))
         spos = (center[0], center[1], 0)
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
