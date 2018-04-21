@@ -33,7 +33,7 @@ def main():
     min_lon, min_lat, max_lon, max_lat = g.get_extent()
     print(min_lon, min_lat, max_lon, max_lat)
 
-    display = dp.Display('test', width=1920, height=1080)
+    display = dp.Display('test', width=800, height=800)
     display.create()
 
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
@@ -45,6 +45,10 @@ def main():
     mesh_indices = t.make_mesh_indices()
     triangle_indices = t.make_triangle_indices()
     normals = t.make_normals()
+    
+    vertices = dp.Display.make_vbo(vertices)
+    normals = dp.Display.make_vbo(normals)
+    triangle_indices = dp.Display.make_numpy_indices(triangle_indices)
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lat - vmin_lat)/2
@@ -87,6 +91,7 @@ def main():
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
+	print(clock.tick())
         # pygame.time.wait(100)
 
     display.quit()
