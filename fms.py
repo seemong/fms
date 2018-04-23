@@ -39,12 +39,14 @@ def main():
     
     print("Getting vertices and making indices")
     vertices = t.get_vertices()
+    print("Got vertices")
     # vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     mesh_indices = t.make_mesh_indices()
+    print("Got mesh indices")
     triangle_indices = t.make_triangle_indices()
+    print("Got triangle indices")
     normals = t.make_normals()
-    
-    print("Made mesh indices")
+    print("Got normals")
     
     vertices = Display.make_vbo(vertices)
     normals = Display.make_vbo(normals)
