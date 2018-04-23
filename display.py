@@ -202,6 +202,36 @@ class Display(object):
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
 
+    def draw_vertices2(self, vertices, indices, normals, color, size, draw_type):
+        """Helper method to draw a line"""
+
+        # init
+        glColor(color)
+        glLineWidth(size)
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        # setup vertices
+        glVertexPointer(3, GL_FLOAT, 0, vertices.tostring())
+
+        # setup normals
+        glEnableClientState(GL_NORMAL_ARRAY)
+        glNormalPointerf(3, GL_FLOAT, 0, normals.tostring())
+
+        indices = Display.make_numpy_indices(indices)
+        if draw_type == 'triangles':
+            glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
+        elif draw_type == 'lines':
+            glDrawElements(GL_LINES, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
+        elif draw_type == 'triangle_strip':
+            glDrawElements(GL_TRIANGLE_STRIP, len(indices), GL_UNSIGNED_INT, \
+                indices.tostring())
+
+        # clean up
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisableClientState(GL_NORMAL_ARRAY)
+
     def draw_triangles(self, vertices, indices, normals, color, size=1):
         self.draw_vertices(vertices, indices, normals, color, size, 'triangles')
 
@@ -209,7 +239,7 @@ class Display(object):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
 
     def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
-        self.draw_vertices(vertices, indices, normals, color, size, 'triangle_strip')
+        self.draw_vertices2(vertices, indices, normals, color, size, 'triangle_strip')
 
 if __name__ == '__main__':
     print('Hello World')
