@@ -202,7 +202,7 @@ class Display(object):
         glDisableClientState(GL_VERTEX_ARRAY)
         glDisableClientState(GL_NORMAL_ARRAY)
 
-    def draw_vertices2(self, vertices, indices, normals, color, size, draw_type):
+    def draw_vertices_non_vbo(self, vertices, indices, normals, color, size, draw_type):
         """Helper method to draw a line"""
 
         # init
@@ -239,7 +239,12 @@ class Display(object):
         self.draw_vertices(vertices, indices, normals, color, size, 'lines')
 
     def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
-        self.draw_vertices2(vertices, indices, normals, color, size, 'triangle_strip')
+        """
+        Draw a surface using triangle strip.
+        vertices, indices and normals are numpy arrays.
+        """
+        self.draw_vertices_non_vbo(vertices, indices, normals, color, size, \
+            'triangle_strip')
 
 if __name__ == '__main__':
     print('Hello World')

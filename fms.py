@@ -48,11 +48,14 @@ def main():
     normals = t.make_normals()
     print("Got normals")
     
+    """
     vertices = Display.make_vbo(vertices)
     normals = Display.make_vbo(normals)
     triangle_indices = Display.make_numpy_indices(triangle_indices)
-    
-    print("Made VBOs")
+    """
+    vertices = numpy.array(vertices, 'f')
+    normals = numpy.array(normals, 'f')
+    triangle_indices = numpy.array(triangle_indices, 'uint32')
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lat - vmin_lat)/2
@@ -63,7 +66,6 @@ def main():
     display.set_perspective(90, 1, geofile.meters_to_arc(50), 10000)
     display.lookAt(((vmin_lon + vmax_lon)/2, vmin_lat, \
         geofile.meters_to_arc(4000)), center, (0, 0, 1))
-
 
     print(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     print('center', center)
