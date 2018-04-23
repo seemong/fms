@@ -251,7 +251,41 @@ def make_normals(vertices, numrows, numcols):
                 normals.append(-1 * norm)
 
     return normals
+    
+def sub(a, b):
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+    
+def cross(a, b):
+    return [a[1] * b[2] - a[2] * b[1], \
+            a[0] * b[2] - a[2] * b[0], \
+            a[0] * b[1] - a[1] * b[0]] 
+            
+def prod(s, v):
+    return [s * v[0], s* v[1], s* v[2]]
 
+def make_normals_fast(vertices, numrows, numcols):
+    """
+    Return normal vectors based on neighbor averaging
+    for a 1D vector array that represents a mesh containing
+    the specified number of rows and cols
+    """
+    normals = []
+    for row in range(0, numrows):
+        for col in range(0, numcols):
+            coord = vertices[col + row * numcols]
+            n1, n2 = get_neighbors(vertices, row, col, numrows, numcols)
+            v1 = sub(n1, coord)
+            v2 = sub(n2, coord)
+            cp = cross(v1, v2)
+            norm = normalize(cp)
+            if norm[2] >= 0:
+                normals.append(norm)
+            else:
+                normals.append(prod(-1, norm))
+
+    print(normals)
+    return normals
+    
 class GeoTile(object):
     """
     GeoTile represents a list of vertices with an extent and a 
@@ -294,7 +328,8 @@ class GeoTile(object):
         return make_triangle_indices(self.get_rows(), self.get_cols())
 
     def make_normals(self):
-        return make_normals(self.get_vertices(), self.get_rows(), self.get_cols())
+        # return make_normals(self.get_vertices(), self.get_rows(), self.get_cols())
+        return make_normals_fast(self.get_vertices(), self.get_rows(), self.get_cols())
 
 
 if __name__ == '__main__':
