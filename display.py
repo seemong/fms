@@ -150,11 +150,6 @@ class Display(object):
         Convert a to a VBO from either a regular list, a numpy array
         or just return a otherwise (assuming it's a VBO)
         """
-        if (type(a) == types.ListType):
-            return np.array(a, 'f')
-        else:
-            return a
-            
         if type(a) == types.ListType:
             return VBO(np.array(a, 'f'))
         elif type(a) == np.ndarray:
