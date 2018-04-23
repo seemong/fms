@@ -31,10 +31,13 @@ def main():
     display = Display('test', width=800, height=800)
     display.create()
 
+    print("Getting tiles")
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.152375, 47.628326, -122.047918, 47.691152)
     t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
+    
+    print("Getting vertices and making indices")
     vertices = t.get_vertices()
     # vertices, rows, cols = g.get_vertices(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     mesh_indices = t.make_mesh_indices()
