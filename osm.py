@@ -5,7 +5,7 @@ import sys
 import xml.etree.ElementTree as etree
 import time
 import argparse
-from geometry.mapobject import *
+from mapobject import *
 import math
 import numpy as np
 

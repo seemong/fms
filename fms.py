@@ -8,12 +8,12 @@ from OpenGL.GLUT import *
 from OpenGL.arrays.vbo import *
 from OpenGLContext.arrays import *
 import math
-from geometry.mapobject import *
-import display.display as dp
 import sys
 import numpy
-import osm.osm as osm
-import terrain.geofile as geofile
+import osm
+import geofile
+import mapobject
+from display import Display
 
 def make_eye(r, theta, dispx, dispy):
     x = r * math.cos(theta) + dispx
@@ -33,7 +33,7 @@ def main():
     min_lon, min_lat, max_lon, max_lat = g.get_extent()
     print(min_lon, min_lat, max_lon, max_lat)
 
-    display = dp.Display('test', width=800, height=800)
+    display = Display('test', width=800, height=800)
     display.create()
 
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
@@ -46,9 +46,9 @@ def main():
     triangle_indices = t.make_triangle_indices()
     normals = t.make_normals()
     
-    vertices = dp.Display.make_vbo(vertices)
-    normals = dp.Display.make_vbo(normals)
-    triangle_indices = dp.Display.make_numpy_indices(triangle_indices)
+    vertices = Display.make_vbo(vertices)
+    normals = Display.make_vbo(normals)
+    triangle_indices = Display.make_numpy_indices(triangle_indices)
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lat - vmin_lat)/2

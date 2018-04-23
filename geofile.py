@@ -6,7 +6,6 @@ import numpy
 import re
 from osgeo import gdal
 import math
-import pdb
 
 SECONDSPERDEGREE = 3600
 ARCPERMETER = 0.000008992800576

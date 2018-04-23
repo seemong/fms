@@ -2,7 +2,6 @@ from __future__ import print_function
 from __future__ import nested_scopes
 from builtins import *
 from geometry import Coord
-import pdb
 import numpy as np
 from collections import OrderedDict
 
