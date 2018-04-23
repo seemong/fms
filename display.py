@@ -215,7 +215,7 @@ class Display(object):
 
         # setup normals
         glEnableClientState(GL_NORMAL_ARRAY)
-        glNormalPointerf(3, GL_FLOAT, 0, normals.tostring())
+        glNormalPointer(GL_FLOAT, 0, normals.tostring())
 
         indices = Display.make_numpy_indices(indices)
         if draw_type == 'triangles':
