@@ -33,7 +33,7 @@ def main():
 
     print("Getting tiles")
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.428, 47.48, -122.194, 47.6745)
-    vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
+    vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-112.267684, 36.039437, -112.079115, 36.197085)
     # vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-122.152375, 47.628326, -122.047918, 47.691152)
     t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     
@@ -65,7 +65,7 @@ def main():
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -5000, 50000)
     display.set_perspective(90, 1, geofile.meters_to_arc(50), 10000)
     display.lookAt(((vmin_lon + vmax_lon)/2, vmin_lat, \
-        geofile.meters_to_arc(4000)), center, (0, 0, 1))
+        geofile.meters_to_arc(5000)), center, (0, 0, 1))
 
     print(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     print('center', center)
@@ -82,8 +82,8 @@ def main():
             break
 
         x, y = make_eye(radius, theta, center[0], center[1])
-        eye = (x, y, geofile.meters_to_arc(3000))
-        display.lookAt(eye, center, (0, 0, 1))
+        eye = (x, y, geofile.meters_to_arc(5000))
+        #display.lookAt(eye, center, (0, 0, 1))
         theta += 0.05
 
         position = (10 * math.sin(theta), -10 * math.cos(theta), 10, 0.0)
