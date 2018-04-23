@@ -2,11 +2,6 @@ from __future__ import print_function
 from __future__ import nested_scopes
 import pygame
 from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
-from OpenGL.arrays.vbo import *
-from OpenGLContext.arrays import *
 import math
 import sys
 import numpy
@@ -46,9 +41,13 @@ def main():
     triangle_indices = t.make_triangle_indices()
     normals = t.make_normals()
     
+    print("Made mesh indices")
+    
     vertices = Display.make_vbo(vertices)
     normals = Display.make_vbo(normals)
     triangle_indices = Display.make_numpy_indices(triangle_indices)
+    
+    print("Made VBOs")
 
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat)/2, 0)
     radius = (vmax_lat - vmin_lat)/2
@@ -91,7 +90,7 @@ def main():
         # display.draw_solid_sphere(0.1, 10, 10, (1, 0, 0), center)
         display.postdraw()
 
-	print(clock.tick())
+        # print(clock.tick())
         # pygame.time.wait(100)
 
     display.quit()
