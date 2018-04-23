@@ -283,7 +283,6 @@ def make_normals_fast(vertices, numrows, numcols):
             else:
                 normals.append(prod(-1, norm))
 
-    print(normals)
     return normals
     
 class GeoTile(object):
