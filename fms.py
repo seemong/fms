@@ -28,20 +28,23 @@ def main():
     
     # set initial position
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = \
-     (-122.419808, 47.558547, -122.179825, 47.71655)
+     (-122.067924, 47.029, -121.2962, 47.8418)
     eye = ((vmin_lon + vmax_lon) / 2, vmin_lat, geofile.meters_to_arc(2000))
     lookAt = (eye[0], 90, 0)
     up = (0, 0, 1)
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat) / 2, 0)
+    
+    earth_color = (135/256.0, 67/256.0, 23/256.0)
      
     g = geofile.GeoFile('data/hgt15/15-A.tif')
     
     tile = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     vertices = tile.get_vertices()
     print('#vertices={0}'.format(len(vertices)))
-    # indices = tile.make_mesh_indices()
-    indices = tile.make_triangle_indices()
-    print('#indices={0}'.format(len(indices)))
+    mesh_indices = tile.make_mesh_indices()
+    print('#mesh indices={0}'.format(len(mesh_indices)))
+    triangle_indices = tile.make_triangle_indices()
+    print('#trinagle indices={0}'.format(len(triangle_indices)))
     normals = tile.make_normals()
     print('#normals={0}'.format(len(normals)))
     
@@ -60,6 +63,7 @@ def main():
     display.create()
     display.set_perspective(90, 1, geofile.meters_to_arc(10), 10000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -10000, 100000)
+    display.set_light_position((5, 5, 5))
     
     clock = pygame.time.Clock()
     while True:
@@ -80,14 +84,14 @@ def main():
         display.lookAt(eye, lookAt, up)
         
         color = (1, 0, 0)
-        # display.draw_lines(vertices, indices, normals, color)
-        display.draw_triangle_strip(vertices, indices, normals, color)
+        display.draw_lines(vertices, mesh_indices, normals, color)
+        # display.draw_triangle_strip(vertices, triangle_indices, normals, earth_color)
         
         spos = (-122.295868, 47.8, 0)
         # display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)
         display.postdraw()
 
-        #print(clock.tick())
+        print(clock.tick())
 
     display.quit()
     print('Goodbye, World')
