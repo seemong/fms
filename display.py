@@ -156,6 +156,15 @@ class Display(object):
             return VBO(a)
         else:
             return a
+            
+    @classmethod
+    def make_numpy_vertices(cls, a):
+        if type(a) == np.ndarray:
+            return a
+        elif type(a) == types.ListType:
+            return array(a, 'f')
+        else:
+            return a
 
     @classmethod
     def make_numpy_indices(cls, a):
@@ -163,10 +172,13 @@ class Display(object):
         Convert a to a numpy index if it's a list or just return a
         otherwise
         """
-        if type(a) == types.ListType:
+        if type(a) == np.ndarray:
+            return a
+        elif type(a) == types.ListType:
             return array(a, 'uint32')
         else:
-            return a
+            assert False
+            
 
     def draw_vertices(self, vertices, indices, normals, color, size, draw_type):
         """Helper method to draw a line"""
@@ -211,13 +223,15 @@ class Display(object):
         glEnableClientState(GL_VERTEX_ARRAY);
 
         # setup vertices
+        vertices = Display.make_numpy_vertices(vertices)
         glVertexPointer(3, GL_FLOAT, 0, vertices.tostring())
 
         # setup normals
         glEnableClientState(GL_NORMAL_ARRAY)
+        normals = Display.make_numpy_vertices(normals)
         glNormalPointer(GL_FLOAT, 0, normals.tostring())
 
-        # indices = Display.make_numpy_indices(indices)
+        indices = Display.make_numpy_indices(indices)
         if draw_type == 'triangles':
             glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, \
                 indices.tostring())
@@ -236,14 +250,14 @@ class Display(object):
         self.draw_vertices(vertices, indices, normals, color, size, 'triangles')
 
     def draw_lines(self, vertices, indices, normals, color, size=1):
-        self.draw_vertices(vertices, indices, normals, color, size, 'lines')
+        self.draw_vertices_non_vbo(vertices, indices, normals, color, size, 'lines')
 
     def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
         """
         Draw a surface using triangle strip.
         vertices, indices and normals are numpy arrays.
         """
-        self.draw_vertices_non_vbo(vertices, indices, normals, color, size, \
+        self.draw_vertices(vertices, indices, normals, color, size, \
             'triangle_strip')
 
 if __name__ == '__main__':

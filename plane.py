@@ -4,15 +4,15 @@ class Plane:
     the viewpoint
     """
     def __init__(self):
-        self._position = None
+        self._eye = None
         self._lookAt = None
         self._up = None
         
-    def get_position(self):
-        return self._position
+    def get_eye(self):
+        return self._eye
         
-    def set_position(self, position):
-        self._position = position
+    def set_eye(self, eye):
+        self._eye = eye
 
     def get_lookAt(self):
         return self._lookAt
