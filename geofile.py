@@ -199,19 +199,21 @@ def make_mesh_indices(nrows, ncols):
 
 def make_triangle_indices(nrows, ncols):
     """"
-    Given nrows and ncols, return a counter clockwise triangle strip
-    suitable for rendering by OpenGL.
+    Given nrows and ncols, return a list of 
+    counter clockwise triangle strips suitable for rendering by OpenGL.
     """
-    indices = []
+    index_list = []
 
     i = 0
     for row in range(0, nrows - 1):
+        indices = []
         for col in range(0, ncols ):
             indices.append(i)
             indices.append(i+ncols)
             i += 1
+        index_list.append(numpy.array(indices, 'uint32'))
 
-    return indices
+    return index_list
 
 def normalize(v):
     size = math.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
@@ -326,47 +328,27 @@ class GeoTile(object):
         return self._ysize
 
     def make_mesh_indices(self):
+        """
+        Returns indices that describe a north south/east west mesh
+        """
         return make_mesh_indices(self.get_ysize(), self.get_xsize())
 
     def make_triangle_indices(self):
+        """
+        This returns a list of indices. Each index describes 
+        one strip.
+        """
         return make_triangle_indices(self.get_ysize(), self.get_xsize())
 
     def make_normals(self):
+        """
+        Return normal vectors for all vertices in this tile. 
+        There are as many normals as there are vertices
+        """
         # return make_normals(self.get_vertices(), self.get_rows(), self.get_cols())
         return make_normals_fast(self.get_vertices(), \
             self.get_ysize(), self.get_xsize())
 
 
 if __name__ == '__main__':
-    import sys
-    import pdb
-
-    g = GeoFile(sys.argv[1])
-    print(g)
-    left, bottom, right, top = g.get_extent()
-    print(left, bottom, right, top)
-    xinc = g.get_x_increment()
-    yinc = g.get_y_increment()
-    numrows = g.get_rows()
-    numcols = g.get_cols()
-
-    print('Reading vertices')
-    vmin_lon, vmin_lat, vmax_lon, vmax_lat = (-121.921155, 46.779471, -121.517574, 46.979085)
-    t = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
-    cols = t.get_cols()
-    n = t.make_normals()
-    v = t.get_vertices()
-
-    v0 = numpy.array(v[0])
-    v1 = numpy.array(v[1])
-    v2 = numpy.array(v[cols])
-    print(n[0])
-    
-    print(normalize(numpy.cross(v1 - v0, v2 - v0)))
-
-    # print(n)
-
-
-
-    #i = make_mesh_indices(5, 3)
-    # print(i)
+   print(make_triangle_indices(5, 6))

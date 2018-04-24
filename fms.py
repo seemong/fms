@@ -29,7 +29,7 @@ def main():
     # set initial position
     vmin_lon, vmin_lat, vmax_lon, vmax_lat = \
      (-122.067924, 47.029, -121.2962, 47.8418)
-    eye = ((vmin_lon + vmax_lon) / 2, vmin_lat, geofile.meters_to_arc(2000))
+    eye = ((vmin_lon + vmax_lon) / 2, vmin_lat, geofile.meters_to_arc(1700))
     lookAt = (eye[0], 90, 0)
     up = (0, 0, 1)
     center = ((vmin_lon + vmax_lon) / 2, (vmin_lat + vmax_lat) / 2, 0)
@@ -43,8 +43,8 @@ def main():
     print('#vertices={0}'.format(len(vertices)))
     mesh_indices = tile.make_mesh_indices()
     print('#mesh indices={0}'.format(len(mesh_indices)))
-    triangle_indices = tile.make_triangle_indices()
-    print('#trinagle indices={0}'.format(len(triangle_indices)))
+    triangle_index_list = tile.make_triangle_indices()
+    # print('#trinagle indices={0}'.format(len(triangle_indices)))
     normals = tile.make_normals()
     print('#normals={0}'.format(len(normals)))
     
@@ -61,7 +61,8 @@ def main():
     
     display = Display('test', width=800, height=800)
     display.create()
-    display.set_perspective(90, 1, geofile.meters_to_arc(10), 10000)
+    display.set_perspective(90, 1, geofile.meters_to_arc(10), \
+        geofile.meters_to_arc(10000))
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -10000, 100000)
     display.set_light_position((5, 5, 5, 1))
     
@@ -88,7 +89,9 @@ def main():
         
         color = (1, 0, 0)
         # display.draw_lines(vertices, mesh_indices, normals, earth_color)
-        display.draw_triangle_strip(vertices, triangle_indices, normals, earth_color)
+        for indices in triangle_index_list:
+            display.draw_triangle_strip(vertices, indices, \
+                normals, earth_color)
         
         spos = (-122.295868, 47.8, 0)
         # display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)
