@@ -39,7 +39,8 @@ def main():
     tile = g.get_tile(vmin_lon, vmin_lat, vmax_lon, vmax_lat)
     vertices = tile.get_vertices()
     print('#vertices={0}'.format(len(vertices)))
-    indices = tile.make_mesh_indices()
+    # indices = tile.make_mesh_indices()
+    indices = tile.make_triangle_indices()
     print('#indices={0}'.format(len(indices)))
     normals = tile.make_normals()
     print('#normals={0}'.format(len(normals)))
@@ -79,10 +80,11 @@ def main():
         display.lookAt(eye, lookAt, up)
         
         color = (1, 0, 0)
-        display.draw_lines(vertices, indices, normals, color)
+        # display.draw_lines(vertices, indices, normals, color)
+        display.draw_triangle_strip(vertices, indices, normals, color)
         
         spos = (-122.295868, 47.8, 0)
-        display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)
+        # display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)
         display.postdraw()
 
         #print(clock.tick())
