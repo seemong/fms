@@ -6,6 +6,7 @@ import numpy
 import re
 from osgeo import gdal
 import math
+import pdb
 
 SECONDSPERDEGREE = 3600
 ARCPERMETER = 0.000008992800576
@@ -23,8 +24,8 @@ class GeoFile(object):
         self._filename = filename
 
         self._g = gdal.Open(filename)
-        self._cols = self._g.RasterXSize
-        self._rows = self._g.RasterYSize
+        self._xsize = self._g.RasterXSize
+        self._ysize = self._g.RasterYSize
         count = self._g.RasterCount
         gt = self._g.GetGeoTransform()
         self._left = gt[0]
@@ -33,8 +34,8 @@ class GeoFile(object):
         self._top = gt[3]
         self._yincrement = -gt[5]
 
-        self._right = self._left +  self._xincrement * (self._cols - 1)
-        self._bottom = self._top - self._yincrement * (self._rows - 1)
+        self._right = self._left +  self._xincrement * (self._xsize - 1)
+        self._bottom = self._top - self._yincrement * (self._ysize - 1)
 
     def read_data(self, xoff=0, yoff=0, xsize=None, ysize=None):
         """
@@ -91,13 +92,13 @@ class GeoFile(object):
         """Return the x increment for each z data point"""
         return self._yincrement
 
-    def get_cols(self):
+    def get_xsize(self):
         """How many cols there are in the data file"""
-        return self._cols
+        return self._xsize
 
-    def get_rows(self):
+    def get_ysize(self):
         """How many rows there are in the data file"""
-        return self._rows
+        return self._ysize
 
     def _lonlat_to_offset(self, lon, lat):
         """Helper method: return x and y indices for the given coords"""
@@ -138,18 +139,21 @@ class GeoFile(object):
         xoff, yoff, xsize, ysize = \
             self._boundingbox_to_xyoffsize(left, bottom, right, top)
         return self.read_data_as_vertices(xoff, yoff, xsize, ysize), \
-            xoff, yoff, ysize, xsize
+            xoff, yoff, xsize, ysize
 
     def get_tile(self, left, bottom, right, top):
         """
         Get a GeoTile based on the coordinates given
         """
-        vertices, xoff, yoff, rows, cols = self.get_vertices(left, bottom, right, top)
-        left = self._left + xoff * self._yincrement
-        bottom = self._top - yoff * self._yincrement
-        right = self._left + (xoff + cols - 1) * self._xincrement
-        top = self._top - (yoff + rows - 1) * self._yincrement
-        return GeoTile(vertices, left, bottom, right, top, rows, cols)
+        vertices, xoff, yoff, xsize, ysize = \
+            self.get_vertices(left, bottom, right, top)
+            
+        left = self._left + xoff * self._xincrement
+        bottom = self._top - (yoff + ysize - 1) * self._yincrement
+        right = self._left + (xoff + xsize - 1) * self._xincrement
+        top = self._top - yoff * self._yincrement
+        
+        return GeoTile(vertices, left, bottom, right, top, xsize, ysize)
 
     def __str__(self):
         return '{0}: rows({1}), cols({2}), left({3}), bottom({4}), '  \
@@ -290,14 +294,15 @@ class GeoTile(object):
     GeoTile represents a list of vertices with an extent and a 
     geometry
     """
-    def __init__(self, vertices, left, bottom, right, top, rows, cols):
+    def __init__(self, vertices, left, bottom, right, top, \
+        xsize, ysize):
         self._vertices = vertices
         self._left = left
         self._bottom = bottom
         self._right = right
         self._top = top
-        self._rows = rows
-        self._cols = cols
+        self._xsize = xsize
+        self._ysize = ysize
 
     def get_vertices(self):
         return self._vertices
@@ -312,23 +317,24 @@ class GeoTile(object):
         return self._right
 
     def get_top(self):
-        self._top
+        return self._top
 
-    def get_rows(self):
-        return self._rows
+    def get_xsize(self):
+        return self._xsize
 
-    def get_cols(self):
-        return self._cols
+    def get_ysize(self):
+        return self._ysize
 
     def make_mesh_indices(self):
-        return make_mesh_indices(self.get_rows(), self.get_cols())
+        return make_mesh_indices(self.get_ysize(), self.get_xsize())
 
     def make_triangle_indices(self):
-        return make_triangle_indices(self.get_rows(), self.get_cols())
+        return make_triangle_indices(self.get_ysize(), self.get_xsize())
 
     def make_normals(self):
         # return make_normals(self.get_vertices(), self.get_rows(), self.get_cols())
-        return make_normals_fast(self.get_vertices(), self.get_rows(), self.get_cols())
+        return make_normals_fast(self.get_vertices(), \
+            self.get_ysize(), self.get_xsize())
 
 
 if __name__ == '__main__':
