@@ -88,10 +88,20 @@ def main():
         display.lookAt(eye, lookAt, up)
         
         color = (1, 0, 0)
-        # display.draw_lines(vertices, mesh_indices, normals, earth_color)
+        # display.draw_lines_vbo(vertices, mesh_indices, normals, earth_color)
+                
         for indices in triangle_index_list:
-            display.draw_triangle_strip(vertices, indices, \
+            display.draw_triangle_strip_vbo(vertices, indices, \
                 normals, earth_color)
+        
+        """
+        [display.draw_triangle_strip(vertices, indices, \
+                normals, earth_color) for indices in triangle_index_list]
+        """
+        """
+        map((lambda indices: display.draw_triangle_strip(vertices, indices, \
+                normals, earth_color)), triangle_index_list)
+        """
         
         spos = (-122.295868, 47.8, 0)
         # display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)

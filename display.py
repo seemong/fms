@@ -184,8 +184,11 @@ class Display(object):
             assert False
             
 
-    def draw_vertices(self, vertices, indices, normals, color, size, draw_type):
-        """Helper method to draw a line"""
+    def draw_vertices_vbo(self, vertices, indices, normals, color, size, draw_type):
+        """
+        Helper method to draw a line or triangle strip
+        Vertices and normals are VBO objects
+        """
 
         # init
         glColor(color)
@@ -193,17 +196,21 @@ class Display(object):
         glEnableClientState(GL_VERTEX_ARRAY);
 
         # setup vertices
-        vbo = Display.make_vbo(vertices)
-        vbo.bind()
-        glVertexPointerf(vbo)
-
+        # vbo = Display.make_vbo(vertices)
+        # vbo.bind()
+        # glVertexPointerf(vbo)
+        vertices.bind()
+        glVertexPointerf(vertices)
+ 
         # setup normals
         glEnableClientState(GL_NORMAL_ARRAY)
-        vbonorm = Display.make_vbo(normals)
-        vbonorm.bind()
-        glNormalPointerf(vbonorm)
-
-        indices = Display.make_numpy_indices(indices)
+        #vbonorm = Display.make_vbo(normals)
+        #vbonorm.bind()
+        #glNormalPointerf(vbonorm)
+        normals.bind()
+        glNormalPointerf(normals)
+ 
+        #indices = Display.make_numpy_indices(indices)
         if draw_type == 'triangles':
             glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, \
                 indices.tostring())
@@ -253,15 +260,21 @@ class Display(object):
     def draw_triangles(self, vertices, indices, normals, color, size=1):
         self.draw_vertices(vertices, indices, normals, color, size, 'triangles')
 
-    def draw_lines(self, vertices, indices, normals, color, size=1):
-        self.draw_vertices_non_vbo(vertices, indices, normals, color, size, 'lines')
-
-    def draw_triangle_strip(self, vertices, indices, normals, color, size=1):
+    def draw_lines_vbo(self, vertices, indices, normals, color, size=1):
         """
         Draw a surface using triangle strip.
-        vertices, indices and normals are numpy arrays.
+        vertices, and normals are VBOs.
+        Indices is a numpy array       
         """
-        self.draw_vertices(vertices, indices, normals, color, size, \
+        self.draw_vertices_vbo(vertices, indices, normals, color, size, 'lines')
+
+    def draw_triangle_strip_vbo(self, vertices, indices, normals, color, size=1):
+        """
+        Draw a surface using triangle strip.
+        vertices, and normals are VBOs.
+        Indices is a numpy array
+        """
+        self.draw_vertices_vbo(vertices, indices, normals, color, size, \
             'triangle_strip')
 
 if __name__ == '__main__':
