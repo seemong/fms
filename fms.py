@@ -65,6 +65,9 @@ def main():
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -10000, 100000)
     display.set_light_position((5, 5, 5, 1))
     
+    vertices = Display.make_vbo(vertices)
+    normals = Display.make_vbo(normals)
+    
     clock = pygame.time.Clock()
     while True:
         quit = False

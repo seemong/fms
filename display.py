@@ -6,6 +6,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from OpenGL.arrays.vbo import *
 from OpenGLContext.arrays import *
+import OpenGL_accelerate
 import math
 import numpy as np
 import types
@@ -147,15 +148,18 @@ class Display(object):
     @classmethod
     def make_vbo(cls, a):
         """
-        Convert a to a VBO from either a regular list, a numpy array
+        Convert arg to a VBO from either a regular list, a numpy array
         or just return a otherwise (assuming it's a VBO)
         """
-        if type(a) == types.ListType:
-            return VBO(np.array(a, 'f'))
+        if type(a) == OpenGL_accelerate.vbo.VBO:
+            return a
         elif type(a) == np.ndarray:
             return VBO(a)
+        elif type(a) == types.ListType:
+            return VBO(np.array(a, 'f'))
         else:
-            return a
+            print(type(a))
+            assert False
             
     @classmethod
     def make_numpy_vertices(cls, a):
