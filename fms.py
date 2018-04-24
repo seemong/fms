@@ -63,7 +63,7 @@ def main():
     display.create()
     display.set_perspective(90, 1, geofile.meters_to_arc(10), 10000)
     # display.set_ortho(vmin_lon, vmax_lon, vmin_lat, vmax_lat, -10000, 100000)
-    display.set_light_position((5, 5, 5))
+    display.set_light_position((5, 5, 5, 1))
     
     clock = pygame.time.Clock()
     while True:
@@ -84,8 +84,8 @@ def main():
         display.lookAt(eye, lookAt, up)
         
         color = (1, 0, 0)
-        display.draw_lines(vertices, mesh_indices, normals, color)
-        # display.draw_triangle_strip(vertices, triangle_indices, normals, earth_color)
+        # display.draw_lines(vertices, mesh_indices, normals, earth_color)
+        display.draw_triangle_strip(vertices, triangle_indices, normals, earth_color)
         
         spos = (-122.295868, 47.8, 0)
         # display.draw_solid_sphere(0.01, 10, 10, (0, 1, 0), center)
